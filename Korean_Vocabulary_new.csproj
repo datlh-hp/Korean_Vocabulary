@@ -1,0 +1,104 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
+		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
+		<!-- <TargetFrameworks>$(TargetFrameworks);net8.0-tizen</TargetFrameworks> -->
+
+		<!-- Note for MacCatalyst:
+		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
+		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
+		The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
+		either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
+		<!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
+
+		<OutputType>Exe</OutputType>
+		<RootNamespace>Korean_Vocabulary_new</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<!-- Display name -->
+		<ApplicationTitle>Korean Vocabulary</ApplicationTitle>
+
+		<!-- App Identifier -->
+		<ApplicationId>com.companyname.korean_vocabulary_new</ApplicationId>
+
+		<!-- Versions -->
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+	</PropertyGroup>
+
+	<!-- Android Release Configuration -->
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<!-- Disable ProGuard to avoid conflicts - use LinkerConfig.xml instead -->
+		<AndroidEnableProguard>false</AndroidEnableProguard>
+		<!-- Disable AOT compilation to fix GUID mismatch issue with AndroidX libraries -->
+		<RunAOTCompilation Condition="'$(Configuration)' == 'Release'">false</RunAOTCompilation>
+		<!-- Try None first - completely disable linker for Release mode -->
+		<!-- If this works, we can try SdkOnly later for smaller app size -->
+		<AndroidLinkMode Condition="'$(Configuration)' == 'Release'">None</AndroidLinkMode>
+		<!-- Keep debug symbols for better crash reports -->
+		<DebugSymbols Condition="'$(Configuration)' == 'Release'">true</DebugSymbols>
+		<DebugType Condition="'$(Configuration)' == 'Release'">portable</DebugType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- App Icon -->
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" Color="#512BD4" />
+		
+		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+
+		<!-- Images -->
+		<MauiImage Include="Resources\Images\*" />
+		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
+		
+		<!-- Icon Images - PNG files with valid names -->
+		<MauiImage Include="Resources\Icon\add_insert_new_plus_button_icon_142943.png" BaseSize="24,24" Resize="True" />
+		<MauiImage Include="Resources\Icon\delete_outline_icon_148544.png" BaseSize="24,24" Resize="True" />
+		<MauiImage Include="Resources\Icon\edit_icon_128873.png" BaseSize="24,24" Resize="True" />
+		<MauiImage Include="Resources\Icon\import_download_icon_143002.png" BaseSize="24,24" Resize="True" />
+		<MauiImage Include="Resources\Icon\star_86960.png" BaseSize="24,24" Resize="True" />
+		<MauiImage Include="Resources\Icon\study_education_book_read_address_book_icon_261868.png" BaseSize="24,24" Resize="True" />
+		<MauiImage Include="Resources\Icon\menu_icon_71858.png" BaseSize="60,60" Resize="True" />
+		<MauiImage Include="Resources\Icon\menu_icon_icons_com_69502.png" BaseSize="24,24" Resize="True" />
+		<MauiImage Include="Resources\Icon\settings_gear_options_option_icon_icons_com_59985.png" BaseSize="24,24" Resize="True" />
+		<MauiImage Include="Resources\Icon\star_black_icons_com_68483.png" BaseSize="24,24" Resize="True" />
+		<MauiImage Include="Resources\Icon\arrow_down_icon_266663.png" BaseSize="24,24" Resize="True" />
+		<MauiImage Include="Resources\Icon\arrow_up_icon_266660.png" BaseSize="24,24" Resize="True" />
+
+		<!-- Custom Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
+
+		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+	</ItemGroup>
+
+	<!-- Linker Configuration -->
+	<ItemGroup>
+		<MauiLinkerDescriptor Include="LinkerConfig.xml" />
+	</ItemGroup>
+	
+	<!-- Android ProGuard Configuration -->
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<ProguardConfiguration Include="Platforms\Android\proguard-rules.pro" />
+	</ItemGroup>
+
+</Project>

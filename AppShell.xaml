@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Korean_Vocabulary_new.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:Korean_Vocabulary_new"
+    xmlns:pages="clr-namespace:Korean_Vocabulary_new.Pages"
+    xmlns:converters="clr-namespace:Korean_Vocabulary_new.Converters"
+    Shell.FlyoutBehavior="Disabled"
+    Title="Từ vựng tiếng Hàn">
+
+    <Shell.Resources>
+        <ResourceDictionary>
+            <converters:IsNotNullConverter x:Key="IsNotNullConverter" />
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <converters:BoolToToggleIconConverter x:Key="BoolToToggleIconConverter" />
+            <converters:BoolToStarIconConverter x:Key="BoolToStarIconConverter" />
+        </ResourceDictionary>
+    </Shell.Resources>
+
+    <ShellContent
+        Title="Từ vựng"
+        ContentTemplate="{DataTemplate pages:VocabularyListPage}"
+        Route="VocabularyListPage"
+        IsVisible="True" />
+
+</Shell>

@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Korean_Vocabulary_new.ViewModels"
+             x:Class="Korean_Vocabulary_new.Pages.AddEditPage"
+             Title="Thêm/Sửa từ vựng"
+             x:DataType="viewmodels:AddEditViewModel">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <!-- Korean Word -->
+            <Label Text="Từ tiếng Hàn *" 
+                   FontSize="17" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Gray900}"
+                   Margin="0,0,0,5" />
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                <Border Grid.Column="0"
+                        BackgroundColor="{StaticResource Gray100}"
+                        StrokeThickness="0"
+                        Padding="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <Entry Text="{Binding Word.KoreanWord}"
+                           TextChanged="OnKoreanWordTextChanged"
+                           Placeholder="Nhập từ tiếng Hàn"
+                           PlaceholderColor="{StaticResource Gray900}"
+                           FontSize="14"
+                           BackgroundColor="Transparent"
+                           Margin="15,0" />
+                </Border>
+                <Button Grid.Column="1"
+                        Text="🔊"
+                        Command="{Binding SpeakKoreanCommand}"
+                        BackgroundColor="{StaticResource SecondaryLight}"
+                        TextColor="{StaticResource Primary}"
+                        FontSize="20"
+                        WidthRequest="50"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        Padding="0"
+                        ToolTipProperties.Text="Phát âm tiếng Hàn">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource SecondaryLight}"
+                                Offset="0,2"
+                                Radius="4"
+                                Opacity="0.2" />
+                    </Button.Shadow>
+                </Button>
+                <Button Grid.Column="2"
+                        Text="✨"
+                        Command="{Binding AutoFillCommand}"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="{StaticResource White}"
+                        FontSize="18"
+                        WidthRequest="50"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        Padding="0"
+                        ToolTipProperties.Text="Tự động điền nghĩa và phát âm">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource Primary}"
+                                Offset="0,3"
+                                Radius="6"
+                                Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
+            </Grid>
+            
+            <!-- Auto-fill loading indicator -->
+            <Border IsVisible="{Binding IsAutoFilling}"
+                    BackgroundColor="{StaticResource SecondaryLight}"
+                    StrokeThickness="0"
+                    Padding="15,10"
+                    Margin="0,-10,0,0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                    <ActivityIndicator IsRunning="{Binding IsAutoFilling}"
+                                     Color="{StaticResource Primary}"
+                                     WidthRequest="20"
+                                     HeightRequest="20" />
+                    <Label Text="Đang tự động điền..."
+                           FontSize="14"
+                           TextColor="{StaticResource Primary}"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- Vietnamese Meaning -->
+            <Label Text="Nghĩa tiếng Việt *" 
+                   FontSize="17" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Gray900}"
+                   Margin="0,0,0,5" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <Border Grid.Column="0"
+                        BackgroundColor="{StaticResource Gray100}"
+                        StrokeThickness="0"
+                        Padding="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <Entry Text="{Binding Word.VietnameseMeaning}"
+                           Placeholder="Nhập nghĩa tiếng Việt"
+                           PlaceholderColor="{StaticResource Gray900}"
+                           FontSize="14"
+                           BackgroundColor="Transparent"
+                           Margin="15,0" />
+                </Border>
+                <Button Grid.Column="1"
+                        Text="🔊"
+                        Command="{Binding SpeakVietnameseCommand}"
+                        BackgroundColor="{StaticResource SecondaryLight}"
+                        TextColor="{StaticResource Primary}"
+                        FontSize="20"
+                        WidthRequest="50"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        Padding="0"
+                        ToolTipProperties.Text="Phát âm tiếng Việt">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource SecondaryLight}"
+                                Offset="0,2"
+                                Radius="4"
+                                Opacity="0.2" />
+                    </Button.Shadow>
+                </Button>
+            </Grid>
+
+            <!-- Pronunciation -->
+            <Label Text="Phát âm (Romanization)" 
+                   FontSize="17" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Gray900}"
+                   Margin="0,0,0,5" />
+            <Border BackgroundColor="{StaticResource Gray100}"
+                    StrokeThickness="0"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Entry Text="{Binding Word.Pronunciation}"
+                       Placeholder="Ví dụ: annyeonghaseyo"
+                       PlaceholderColor="{StaticResource Gray900}"
+                       FontSize="14"
+                       BackgroundColor="Transparent"
+                       Margin="15,0" />
+            </Border>
+
+            <!-- Category -->
+            <Label Text="Danh mục" 
+                   FontSize="17" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Gray900}"
+                   Margin="0,0,0,5" />
+            <Border BackgroundColor="{StaticResource Gray100}"
+                    StrokeThickness="0"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Picker ItemsSource="{Binding Categories}"
+                        ItemDisplayBinding="{Binding Name}"
+                        SelectedItem="{Binding SelectedCategoryItem}"
+                        Title="Chọn danh mục"
+                        BackgroundColor="Transparent"
+                        Margin="10,0" />
+            </Border>
+
+            <!-- Word Type -->
+            <Label Text="Loại từ" 
+                   FontSize="17" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Gray900}"
+                   Margin="0,0,0,5" />
+            <Border BackgroundColor="{StaticResource Gray100}"
+                    StrokeThickness="0"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Picker ItemsSource="{Binding WordTypes}"
+                        SelectedItem="{Binding SelectedWordType}"
+                        Title="Chọn loại từ"
+                        BackgroundColor="Transparent"
+                        Margin="10,0" />
+            </Border>
+
+            <!-- Example Sentence -->
+            <Label Text="Ví dụ câu" 
+                   FontSize="17" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Gray900}"
+                   Margin="0,0,0,5" />
+            <Grid RowDefinitions="*,Auto" RowSpacing="10">
+                <Border Grid.Row="0"
+                        BackgroundColor="{StaticResource Gray100}"
+                        StrokeThickness="0"
+                        Padding="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <Editor Text="{Binding Word.ExampleSentence}"
+                            TextChanged="OnExampleSentenceTextChanged"
+                            Placeholder="Nhập câu ví dụ bằng tiếng Hàn"
+                            HeightRequest="100"
+                            PlaceholderColor="{StaticResource Gray900}"
+                            FontSize="14"
+                            BackgroundColor="Transparent"
+                            Margin="15,10" />
+                </Border>
+                <Button Grid.Row="1"
+                        Text="✨ Dịch tự động"
+                        Command="{Binding TranslateExampleCommand}"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="{StaticResource White}"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        Padding="15,10"
+                        CornerRadius="12"
+                        HorizontalOptions="End">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource Primary}"
+                                Offset="0,3"
+                                Radius="6"
+                                Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
+            </Grid>
+            
+            <!-- Example translation loading indicator -->
+            <Border IsVisible="{Binding IsTranslatingExample}"
+                    BackgroundColor="{StaticResource SecondaryLight}"
+                    StrokeThickness="0"
+                    Padding="15,10"
+                    Margin="0,-10,0,0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                    <ActivityIndicator IsRunning="{Binding IsTranslatingExample}"
+                                     Color="{StaticResource Primary}"
+                                     WidthRequest="20"
+                                     HeightRequest="20" />
+                    <Label Text="Đang dịch câu ví dụ..."
+                           FontSize="14"
+                           TextColor="{StaticResource Primary}"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- Example Translation -->
+            <Label Text="Dịch câu ví dụ" 
+                   FontSize="17" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Gray900}"
+                   Margin="0,0,0,5" />
+            <Border BackgroundColor="{StaticResource Gray100}"
+                    StrokeThickness="0"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Editor Text="{Binding Word.ExampleTranslation}"
+                        Placeholder="Nhập bản dịch câu ví dụ"
+                        HeightRequest="100"
+                        PlaceholderColor="{StaticResource Gray900}"
+                        FontSize="14"
+                        BackgroundColor="Transparent"
+                        Margin="15,10" />
+            </Border>
+
+            <!-- Difficulty Level -->
+            <Label Text="Độ khó (1-5)" 
+                   FontSize="17" 
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Gray900}"
+                   Margin="0,0,0,5" />
+            <Border BackgroundColor="{StaticResource Gray100}"
+                    StrokeThickness="0"
+                    Padding="15,15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Slider Minimum="1"
+                            Maximum="5"
+                            Value="{Binding Word.DifficultyLevel}"
+                            ValueChanged="OnDifficultyChanged"
+                            MinimumTrackColor="{StaticResource Primary}"
+                            MaximumTrackColor="{StaticResource Gray300}"
+                            ThumbColor="{StaticResource Primary}" />
+                    <Label x:Name="DifficultyLabel"
+                           Text="{Binding Word.DifficultyLevel, StringFormat='Độ khó: {0}'}"
+                           FontSize="15"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Favorite -->
+            <Border BackgroundColor="{StaticResource Gray100}"
+                    StrokeThickness="0"
+                    Padding="15,15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <HorizontalStackLayout Spacing="15">
+                    <Switch IsToggled="{Binding Word.IsFavorite}"
+                            OnColor="{StaticResource Primary}"
+                            ThumbColor="{StaticResource White}"
+                            VerticalOptions="Center" />
+                    <Label Text="Đánh dấu yêu thích"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Gray900}"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- Buttons -->
+            <Grid ColumnDefinitions="*,*" Margin="0,25,0,0" ColumnSpacing="12">
+                <Button Grid.Column="0"
+                        Text="Hủy"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="{StaticResource Gray400}"
+                        TextColor="{StaticResource White}"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        Padding="0,16"
+                        CornerRadius="12">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource Gray400}"
+                                Offset="0,3"
+                                Radius="6"
+                                Opacity="0.2" />
+                    </Button.Shadow>
+                </Button>
+                <Button Grid.Column="1"
+                        Text="Lưu"
+                        Command="{Binding SaveCommand}"
+                        IsEnabled="{Binding IsValid}"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="{StaticResource White}"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        Padding="0,16"
+                        CornerRadius="12">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource Primary}"
+                                Offset="0,4"
+                                Radius="8"
+                                Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+

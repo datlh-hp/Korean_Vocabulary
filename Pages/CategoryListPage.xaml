@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Korean_Vocabulary_new.ViewModels"
+             xmlns:models="clr-namespace:Korean_Vocabulary_new.Models"
+             x:Class="Korean_Vocabulary_new.Pages.CategoryListPage"
+             Title="Quản lý danh mục"
+             x:DataType="viewmodels:CategoryListViewModel">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Grid Grid.Row="0" 
+              ColumnDefinitions="*,Auto"
+              Padding="15,10"
+              BackgroundColor="{StaticResource Gray100}">
+            <Label Grid.Column="0"
+                   Text="Danh sách danh mục"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   VerticalOptions="Center" />
+            <Button Grid.Column="1"
+                    Text="Thêm"
+                    Command="{Binding AddCategoryCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    Padding="12,8"
+                    FontSize="14">
+                <Button.ImageSource>
+                    <FileImageSource File="add_insert_new_plus_button_icon_142943.png" />
+                </Button.ImageSource>
+            </Button>
+        </Grid>
+
+        <!-- Categories List -->
+        <RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding LoadCategoriesCommand}">
+            <CollectionView ItemsSource="{Binding Categories}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Category">
+                        <Grid Padding="15,12"
+                              ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="{Binding .}" />
+                            </Grid.GestureRecognizers>
+                            
+                            <!-- Color indicator -->
+                            <BoxView Grid.Column="0"
+                                     WidthRequest="40"
+                                     HeightRequest="40"
+                                     CornerRadius="20"
+                                     Color="{Binding Color}"
+                                     Margin="0,0,15,0"
+                                     VerticalOptions="Center" />
+                            
+                            <!-- Category name -->
+                            <VerticalStackLayout Grid.Column="1" 
+                                                 VerticalOptions="Center">
+                                <Label Text="{Binding Name}"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray900}" />
+                                <Label Text="{Binding CreatedDate, StringFormat='Tạo: {0:dd/MM/yyyy}'}"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray500}"
+                                       Margin="0,5,0,0" />
+                            </VerticalStackLayout>
+
+                            <!-- Move Up button -->
+                            <Button Grid.Column="2"
+                                    ImageSource="arrow_up_icon_266660.png"
+                                    FontSize="20"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource Primary}"
+                                    Clicked="OnMoveUpClicked"
+                                    CommandParameter="{Binding .}"
+                                    WidthRequest="40"
+                                    HeightRequest="40"
+                                    Padding="0" />
+
+                            <!-- Move Down button -->
+                            <Button Grid.Column="3"
+                                    ImageSource="arrow_down_icon_266663.png"
+                                    FontSize="20"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource Primary}"
+                                    Clicked="OnMoveDownClicked"
+                                    CommandParameter="{Binding .}"
+                                    WidthRequest="40"
+                                    HeightRequest="40"
+                                    Padding="0" />
+
+                            <!-- Edit button -->
+                            <ImageButton Grid.Column="4"
+                                        Source="edit_icon_128873.png"
+                                        BackgroundColor="Transparent"
+                                        Clicked="OnEditClicked"
+                                        CommandParameter="{Binding .}"
+                                        WidthRequest="36"
+                                        HeightRequest="36" />
+
+                            <!-- Delete button -->
+                            <ImageButton Grid.Column="5"
+                                        Source="delete_outline_icon_148544.png"
+                                        BackgroundColor="Transparent"
+                                        Clicked="OnDeleteClicked"
+                                        CommandParameter="{Binding .}"
+                                        WidthRequest="36"
+                                        HeightRequest="36" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <StackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                        <Label Text="Chưa có danh mục nào"
+                               FontSize="18"
+                               TextColor="{StaticResource Gray500}"
+                               HorizontalOptions="Center" />
+                        <Label Text="Nhấn nút + để thêm danh mục mới"
+                               FontSize="14"
+                               TextColor="{StaticResource Gray400}"
+                               HorizontalOptions="Center"
+                               Margin="0,10,0,0" />
+                    </StackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>
+
+

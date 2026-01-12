@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Korean_Vocabulary_new.ViewModels"
+             x:Class="Korean_Vocabulary_new.Pages.AddEditCategoryPage"
+             Title="Thêm/Sửa danh mục"
+             x:DataType="viewmodels:AddEditCategoryViewModel">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <!-- Category Name -->
+            <Label Text="Tên danh mục *" FontSize="18" FontAttributes="Bold" />
+            <Entry Text="{Binding Name}"
+                    Placeholder="Nhập tên danh mục"
+                    PlaceholderColor="{StaticResource Gray900}"
+                    FontSize="14"/>
+
+            <!-- Color Selection -->
+            <Label Text="Màu sắc" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0" />
+            <Label Text="Chọn màu cho danh mục bằng RGB" 
+                   FontSize="14" 
+                   TextColor="{StaticResource Gray600}"
+                   Margin="0,0,0,10" />
+            
+            <!-- Hiển thị màu đã chọn -->
+            <BoxView x:Name="ColorPreview"
+                     HeightRequest="100"
+                     WidthRequest="100"
+                     CornerRadius="10"
+                     Color="{Binding Color}"
+                     HorizontalOptions="Center"
+                     Margin="0,0,0,15" />
+
+            <!-- Mã màu hiện tại -->
+            <Label Text="{Binding Color, StringFormat='Mã màu: {0}'}"
+                   FontSize="14"
+                   TextColor="{StaticResource Gray700}"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,15" />
+
+            <!-- Slider cho Red -->
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Margin="0,0,0,10">
+                <Label Grid.Column="0" 
+                       Text="Đỏ (R):" 
+                       FontSize="14"
+                       VerticalOptions="Center"
+                       WidthRequest="80" />
+                <Slider Grid.Column="1"
+                        x:Name="RedSlider"
+                        Minimum="0" 
+                        Maximum="255"
+                        Value="{Binding RedValue}"
+                        ValueChanged="OnColorChanged"
+                        VerticalOptions="Center" />
+                <Label Grid.Column="2" 
+                       Text="{Binding RedValue, StringFormat='{0:F0}'}" 
+                       FontSize="14"
+                       VerticalOptions="Center"
+                       WidthRequest="40" />
+            </Grid>
+
+            <!-- Slider cho Green -->
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Margin="0,0,0,10">
+                <Label Grid.Column="0" 
+                       Text="Xanh lá (G):" 
+                       FontSize="14"
+                       VerticalOptions="Center"
+                       WidthRequest="80" />
+                <Slider Grid.Column="1"
+                        x:Name="GreenSlider"
+                        Minimum="0" 
+                        Maximum="255"
+                        Value="{Binding GreenValue}"
+                        ValueChanged="OnColorChanged"
+                        VerticalOptions="Center" />
+                <Label Grid.Column="2" 
+                       Text="{Binding GreenValue, StringFormat='{0:F0}'}" 
+                       FontSize="14"
+                       VerticalOptions="Center"
+                       WidthRequest="40" />
+            </Grid>
+
+            <!-- Slider cho Blue -->
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Margin="0,0,0,15">
+                <Label Grid.Column="0" 
+                       Text="Xanh dương (B):" 
+                       FontSize="14"
+                       VerticalOptions="Center"
+                       WidthRequest="80" />
+                <Slider Grid.Column="1"
+                        x:Name="BlueSlider"
+                        Minimum="0" 
+                        Maximum="255"
+                        Value="{Binding BlueValue}"
+                        ValueChanged="OnColorChanged"
+                        VerticalOptions="Center" />
+                <Label Grid.Column="2" 
+                       Text="{Binding BlueValue, StringFormat='{0:F0}'}" 
+                       FontSize="14"
+                       VerticalOptions="Center"
+                       WidthRequest="40" />
+            </Grid>
+
+            <!-- Buttons -->
+            <Grid ColumnDefinitions="*,*" Margin="0,30,0,0" ColumnSpacing="10">
+                <Button Grid.Column="0"
+                        Text="Hủy"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="{StaticResource Gray500}" />
+                <Button Grid.Column="1"
+                        Text="Lưu"
+                        Command="{Binding SaveCommand}"
+                        BackgroundColor="{StaticResource Primary}" />
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+

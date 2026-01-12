@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  This file specifies which parts of your app should be preserved when linking.
+  Linker is used to reduce app size by removing unused code.
+  This configuration ensures all critical types are preserved.
+-->
+<linker>
+  <!-- Preserve all types in the main assembly (includes Models, Services, ViewModels, Pages, etc.) -->
+  <assembly fullname="Korean_Vocabulary_new" preserve="all" />
+  
+  <!-- Preserve SQLite-net types and attributes (required for database operations) -->
+  <assembly fullname="SQLite-net" preserve="all" />
+  <assembly fullname="SQLitePCLRaw.batteries_v2" preserve="all" />
+  <assembly fullname="SQLitePCLRaw.core" preserve="all" />
+  <assembly fullname="SQLitePCLRaw.provider.dynamic_cdecl" preserve="all" />
+  <assembly fullname="SQLitePCLRaw.provider.e_sqlite3.android" preserve="all" />
+  
+  <!-- Preserve all SQLite attributes used in Models -->
+  <assembly fullname="SQLite-net">
+    <type fullname="SQLite.*" preserve="all" />
+    <type fullname="SQLite.TableAttribute" preserve="all" />
+    <type fullname="SQLite.PrimaryKeyAttribute" preserve="all" />
+    <type fullname="SQLite.AutoIncrementAttribute" preserve="all" />
+    <type fullname="SQLite.MaxLengthAttribute" preserve="all" />
+    <type fullname="SQLite.IgnoreAttribute" preserve="all" />
+    <type fullname="SQLite.ColumnAttribute" preserve="all" />
+    <type fullname="SQLite.IndexedAttribute" preserve="all" />
+    <type fullname="SQLite.NotNullAttribute" preserve="all" />
+    <type fullname="SQLite.CollationAttribute" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve Models with SQLite attributes -->
+  <assembly fullname="Korean_Vocabulary_new">
+    <type fullname="Korean_Vocabulary_new.Models.VocabularyWord" preserve="all" />
+    <type fullname="Korean_Vocabulary_new.Models.Category" preserve="all" />
+    <type fullname="Korean_Vocabulary_new.Models.*" preserve="all" />
+    <type fullname="Korean_Vocabulary_new.Services.DatabaseService" preserve="all" />
+    <type fullname="Korean_Vocabulary_new.Services.*" preserve="all" />
+    <type fullname="Korean_Vocabulary_new.ViewModels.*" preserve="all" />
+    <type fullname="Korean_Vocabulary_new.Pages.*" preserve="all" />
+    <type fullname="Korean_Vocabulary_new.Converters.*" preserve="all" />
+    <type fullname="Korean_Vocabulary_new.App" preserve="all" />
+    <type fullname="Korean_Vocabulary_new.AppShell" preserve="all" />
+    <type fullname="Korean_Vocabulary_new.MauiProgram" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve INotifyPropertyChanged implementations (required for data binding) -->
+  <assembly fullname="System">
+    <type fullname="System.ComponentModel.INotifyPropertyChanged" preserve="all" />
+    <type fullname="System.ComponentModel.PropertyChangedEventArgs" preserve="all" />
+    <type fullname="System.ComponentModel.PropertyChangedEventHandler" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve MAUI Controls and XAML types (required for UI) -->
+  <assembly fullname="Microsoft.Maui.Controls" preserve="all" />
+  <assembly fullname="Microsoft.Maui.Controls.Xaml" preserve="all" />
+  <assembly fullname="Microsoft.Maui" preserve="all" />
+  <assembly fullname="Microsoft.Maui.Essentials" preserve="all" />
+  
+  <!-- Preserve ResourceDictionary and StaticResource types -->
+  <assembly fullname="Microsoft.Maui.Controls">
+    <type fullname="Microsoft.Maui.Controls.ResourceDictionary" preserve="all" />
+    <type fullname="Microsoft.Maui.Controls.Xaml.StaticResourceExtension" preserve="all" />
+    <type fullname="Microsoft.Maui.Controls.Xaml.DynamicResourceExtension" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve IValueConverter interface for converters -->
+  <assembly fullname="System">
+    <type fullname="System.Windows.Input.ICommand" preserve="all" />
+  </assembly>
+  
+  <assembly fullname="Microsoft.Maui.Controls">
+    <type fullname="Microsoft.Maui.Controls.IValueConverter" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve dependency injection types (required for service registration) -->
+  <assembly fullname="Microsoft.Extensions.DependencyInjection" preserve="all" />
+  <assembly fullname="Microsoft.Extensions.DependencyInjection.Abstractions" preserve="all" />
+  
+  <!-- Preserve ObservableCollection and related types (required for data binding) -->
+  <assembly fullname="System.ObjectModel">
+    <type fullname="System.Collections.ObjectModel.ObservableCollection`1" preserve="all" />
+    <type fullname="System.Collections.ObjectModel.*" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve reflection types used by SQLite -->
+  <assembly fullname="System.Reflection">
+    <type fullname="System.Reflection.*" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve System.Linq for database queries -->
+  <assembly fullname="System.Linq">
+    <type fullname="System.Linq.*" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve System.Linq.Expressions for LINQ queries -->
+  <assembly fullname="System.Linq.Expressions">
+    <type fullname="System.Linq.Expressions.*" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve System.Threading for async operations -->
+  <assembly fullname="System.Threading">
+    <type fullname="System.Threading.SemaphoreSlim" preserve="all" />
+    <type fullname="System.Threading.Tasks.*" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve System.IO for file operations -->
+  <assembly fullname="System.IO">
+    <type fullname="System.IO.*" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve System for DateTime, String, etc. -->
+  <assembly fullname="System">
+    <type fullname="System.DateTime" preserve="all" />
+    <type fullname="System.String" preserve="all" />
+    <type fullname="System.Exception" preserve="all" />
+  </assembly>
+</linker>
+

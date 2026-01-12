@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Korean_Vocabulary_new.ViewModels"
+             x:Class="Korean_Vocabulary_new.Pages.StudyPage"
+             Title="Học tập"
+             x:DataType="viewmodels:StudyViewModel">
+
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto">
+        <!-- Progress -->
+        <Border Grid.Row="0"
+                BackgroundColor="{StaticResource SecondaryLight}"
+                StrokeThickness="0"
+                Padding="15,12"
+                Margin="20,15,20,10">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="12" />
+            </Border.StrokeShape>
+            <Label Text="{Binding ProgressText}"
+                   FontSize="17"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Primary}"
+                   HorizontalOptions="Center" />
+        </Border>
+        
+        <!-- Refresh Button -->
+        <Button Grid.Row="1"
+                Text="🔄 Làm mới"
+                Command="{Binding StartStudyCommand}"
+                BackgroundColor="{StaticResource Primary}"
+                TextColor="{StaticResource White}"
+                FontSize="15"
+                FontAttributes="Bold"
+                Padding="0,14"
+                CornerRadius="12"
+                Margin="20,0,20,15"
+                IsVisible="{Binding IsFinished, Converter={StaticResource InvertedBoolConverter}}">
+            <Button.Shadow>
+                <Shadow Brush="{StaticResource Primary}"
+                        Offset="0,3"
+                        Radius="6"
+                        Opacity="0.3" />
+            </Button.Shadow>
+        </Button>
+
+        <!-- Word Display -->
+        <Border Grid.Row="2"
+                StrokeThickness="0"
+                Padding="35"
+                Margin="20,0,20,20"
+                BackgroundColor="{StaticResource White}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="20" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="{StaticResource Primary}"
+                        Offset="0,4"
+                        Radius="12"
+                        Opacity="0.2" />
+            </Border.Shadow>
+            <VerticalStackLayout Spacing="20" VerticalOptions="Center">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Label Grid.Column="0"
+                           Text="{Binding QuestionText}"
+                           FontSize="42"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           TextColor="{StaticResource Primary}"
+                           Margin="0,0,0,5"
+                           IsVisible="{Binding CurrentWord, Converter={StaticResource IsNotNullConverter}}" />
+                    <Border Grid.Column="1"
+                            BackgroundColor="{StaticResource SecondaryLight}"
+                            StrokeThickness="0"
+                            Padding="0"
+                            WidthRequest="50"
+                            HeightRequest="50"
+                            VerticalOptions="Center"
+                            IsVisible="{Binding CurrentWord, Converter={StaticResource IsNotNullConverter}}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Button Text="🔊"
+                                Command="{Binding SpeakKoreanCommand}"
+                                BackgroundColor="Transparent"
+                                TextColor="{StaticResource Primary}"
+                                FontSize="24"
+                                WidthRequest="50"
+                                HeightRequest="50"
+                                Padding="0"
+                                CornerRadius="12"
+                                IsVisible="{Binding IsReverseMode, Converter={StaticResource InvertedBoolConverter}}" />
+                        <Button Text="🔊"
+                                Command="{Binding SpeakVietnameseCommand}"
+                                BackgroundColor="Transparent"
+                                TextColor="{StaticResource Primary}"
+                                FontSize="24"
+                                WidthRequest="50"
+                                HeightRequest="50"
+                                Padding="0"
+                                CornerRadius="12"
+                                IsVisible="{Binding IsReverseMode}" />
+                    </Border>
+                </Grid>
+                
+                <Label Text="{Binding CurrentWord.Pronunciation}"
+                       FontSize="22"
+                       HorizontalOptions="Center"
+                       TextColor="{StaticResource Gray600}"
+                       FontAttributes="Italic"
+                       Margin="0,0,0,10"
+                       IsVisible="{Binding ShowPronunciation}" />
+
+                <Border BackgroundColor="{StaticResource SecondaryLight}"
+                        StrokeThickness="0"
+                        Padding="0"
+                        HorizontalOptions="Center"
+                        IsVisible="{Binding CurrentWord.WordType, Converter={StaticResource IsNotNullConverter}}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <Label Text="{Binding CurrentWord.WordType}"
+                           FontSize="13"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           TextColor="{StaticResource Primary}"
+                           BackgroundColor="Transparent"
+                           Padding="12,6" />
+                </Border>
+
+                <Border BackgroundColor="{StaticResource SecondaryLight}"
+                        StrokeThickness="0"
+                        Padding="20,15"
+                        Margin="0,15,0,0"
+                        IsVisible="{Binding ShowAnswer}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="15" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <Label Grid.Column="0"
+                                   Text="{Binding CorrectAnswerText}"
+                                   FontSize="26"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center"
+                                   TextColor="{StaticResource Gray900}"
+                                   HorizontalTextAlignment="Center" />
+                            <Border Grid.Column="1"
+                                    BackgroundColor="{StaticResource White}"
+                                    StrokeThickness="0"
+                                    Padding="0"
+                                    WidthRequest="45"
+                                    HeightRequest="45"
+                                    VerticalOptions="Center"
+                                    IsVisible="{Binding IsReverseMode, Converter={StaticResource InvertedBoolConverter}}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Button Text="🔊"
+                                        Command="{Binding SpeakVietnameseCommand}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="{StaticResource Primary}"
+                                        FontSize="20"
+                                        WidthRequest="45"
+                                        HeightRequest="45"
+                                        Padding="0"
+                                        CornerRadius="10" />
+                            </Border>
+                            <Border Grid.Column="1"
+                                    BackgroundColor="{StaticResource White}"
+                                    StrokeThickness="0"
+                                    Padding="0"
+                                    WidthRequest="45"
+                                    HeightRequest="45"
+                                    VerticalOptions="Center"
+                                    IsVisible="{Binding IsReverseMode}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Button Text="🔊"
+                                        Command="{Binding SpeakKoreanCommand}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="{StaticResource Primary}"
+                                        FontSize="20"
+                                        WidthRequest="45"
+                                        HeightRequest="45"
+                                        Padding="0"
+                                        CornerRadius="10" />
+                            </Border>
+                        </Grid>
+
+                        <Border BackgroundColor="{StaticResource White}"
+                                StrokeThickness="0"
+                                Padding="15,12"
+                                Margin="0,5,0,0"
+                                IsVisible="{Binding CurrentWord.ExampleSentence, Converter={StaticResource IsNotNullConverter}}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{Binding CurrentWord.ExampleSentence}"
+                                       FontSize="17"
+                                       HorizontalOptions="Center"
+                                       TextColor="{StaticResource Gray800}"
+                                       HorizontalTextAlignment="Center" />
+
+                                <Label Text="{Binding CurrentWord.ExampleTranslation}"
+                                       FontSize="15"
+                                       HorizontalOptions="Center"
+                                       TextColor="{StaticResource Gray600}"
+                                       FontAttributes="Italic"
+                                       HorizontalTextAlignment="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Empty state message -->
+                <Label Text="Chưa có từ vựng để học.&#10;Hãy thêm từ vựng hoặc nhập dữ liệu TOPIK."
+                       FontSize="18"
+                       HorizontalOptions="Center"
+                       TextColor="{StaticResource Gray600}"
+                       HorizontalTextAlignment="Center"
+                       IsVisible="{Binding CurrentWord, Converter={StaticResource InvertedBoolConverter}}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Answer Input -->
+        <VerticalStackLayout Grid.Row="3" 
+                             Spacing="15" 
+                             Padding="20,0,20,15" 
+                             IsVisible="{Binding IsFinished, Converter={StaticResource InvertedBoolConverter}}">
+            <!-- Text Input Mode -->
+            <VerticalStackLayout Spacing="15" 
+                                 IsVisible="{Binding IsMultipleChoiceMode, Converter={StaticResource InvertedBoolConverter}}">
+                <Border BackgroundColor="{StaticResource Gray100}"
+                        StrokeThickness="0"
+                        Padding="0"
+                        IsVisible="{Binding ShowAnswer, Converter={StaticResource InvertedBoolConverter}}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="15" />
+                    </Border.StrokeShape>
+                    <Entry Text="{Binding UserAnswer}"
+                           Placeholder="{Binding AnswerPlaceholder}"
+                           PlaceholderColor="{StaticResource Gray900}"
+                           FontSize="14"
+                           BackgroundColor="Transparent"
+                           Margin="15,0" />
+                </Border>
+                
+                <Button Text="Hiển thị đáp án"
+                        Command="{Binding ShowAnswerCommand}"
+                        IsVisible="{Binding ShowAnswer, Converter={StaticResource InvertedBoolConverter}}"
+                        BackgroundColor="{StaticResource PrimaryLight}"
+                        TextColor="{StaticResource White}"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        Padding="0,16"
+                        CornerRadius="12">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource PrimaryLight}"
+                                Offset="0,3"
+                                Radius="6"
+                                Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
+
+                <Button Text="Kiểm tra"
+                        Command="{Binding CheckAnswerCommand}"
+                        IsVisible="{Binding ShowAnswer, Converter={StaticResource InvertedBoolConverter}}"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="{StaticResource White}"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        Padding="0,16"
+                        CornerRadius="12">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource Primary}"
+                                Offset="0,4"
+                                Radius="8"
+                                Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
+            </VerticalStackLayout>
+
+            <!-- Multiple Choice Mode -->
+            <VerticalStackLayout Spacing="12" 
+                                 IsVisible="{Binding IsMultipleChoiceMode}">
+                <Label Text="Chọn đáp án đúng:"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource Gray700}"
+                       Margin="0,0,0,5"
+                       IsVisible="{Binding ShowAnswer, Converter={StaticResource InvertedBoolConverter}}" />
+                
+                <Grid RowDefinitions="*,*,*,*" 
+                      ColumnDefinitions="*"
+                      RowSpacing="12"
+                      IsVisible="{Binding ShowAnswer, Converter={StaticResource InvertedBoolConverter}}">
+                    <Button Grid.Row="0"
+                            Text="{Binding Choice1}"
+                            Command="{Binding SelectChoiceCommand}"
+                            CommandParameter="0"
+                            BackgroundColor="{StaticResource White}"
+                            TextColor="{StaticResource Primary}"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Padding="0,18"
+                            CornerRadius="12"
+                            BorderWidth="2"
+                            BorderColor="{StaticResource Primary}">
+                        <Button.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Offset="0,2"
+                                    Radius="4"
+                                    Opacity="0.3" />
+                        </Button.Shadow>
+                    </Button>
+                    <Button Grid.Row="1"
+                            Text="{Binding Choice2}"
+                            Command="{Binding SelectChoiceCommand}"
+                            CommandParameter="1"
+                            BackgroundColor="{StaticResource White}"
+                            TextColor="{StaticResource Primary}"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Padding="0,18"
+                            CornerRadius="12"
+                            BorderWidth="2"
+                            BorderColor="{StaticResource Primary}">
+                        <Button.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Offset="0,2"
+                                    Radius="4"
+                                    Opacity="0.3" />
+                        </Button.Shadow>
+                    </Button>
+                    <Button Grid.Row="2"
+                            Text="{Binding Choice3}"
+                            Command="{Binding SelectChoiceCommand}"
+                            CommandParameter="2"
+                            BackgroundColor="{StaticResource White}"
+                            TextColor="{StaticResource Primary}"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Padding="0,18"
+                            CornerRadius="12"
+                            BorderWidth="2"
+                            BorderColor="{StaticResource Primary}">
+                        <Button.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Offset="0,2"
+                                    Radius="4"
+                                    Opacity="0.3" />
+                        </Button.Shadow>
+                    </Button>
+                    <Button Grid.Row="3"
+                            Text="{Binding Choice4}"
+                            Command="{Binding SelectChoiceCommand}"
+                            CommandParameter="3"
+                            BackgroundColor="{StaticResource White}"
+                            TextColor="{StaticResource Primary}"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Padding="0,18"
+                            CornerRadius="12"
+                            BorderWidth="2"
+                            BorderColor="{StaticResource Primary}">
+                        <Button.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Offset="0,2"
+                                    Radius="4"
+                                    Opacity="0.3" />
+                        </Button.Shadow>
+                    </Button>
+                </Grid>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+
+        <!-- Next Button -->
+        <Button Grid.Row="4"
+                Text="Từ tiếp theo →"
+                Command="{Binding NextWordCommand}"
+                IsVisible="{Binding ShowAnswer}"
+                BackgroundColor="{StaticResource Primary}"
+                TextColor="{StaticResource White}"
+                FontSize="17"
+                FontAttributes="Bold"
+                Padding="0,18"
+                CornerRadius="12"
+                Margin="20,10,20,15">
+            <Button.Shadow>
+                <Shadow Brush="{StaticResource Primary}"
+                        Offset="0,4"
+                        Radius="8"
+                        Opacity="0.3" />
+            </Button.Shadow>
+        </Button>
+
+        <!-- Finish Screen -->
+        <Border Grid.Row="5"
+                BackgroundColor="{StaticResource White}"
+                StrokeThickness="0"
+                Padding="30"
+                Margin="20"
+                IsVisible="{Binding IsFinished}"
+                VerticalOptions="Center">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="20" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="{StaticResource Primary}"
+                        Offset="0,4"
+                        Radius="12"
+                        Opacity="0.2" />
+            </Border.Shadow>
+            <VerticalStackLayout Spacing="25"
+                                 VerticalOptions="Center">
+                <Label Text="🎉"
+                       FontSize="64"
+                       HorizontalOptions="Center"
+                       Margin="0,0,0,10" />
+                
+                <Label Text="Hoàn thành!"
+                       FontSize="32"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       TextColor="{StaticResource Primary}" />
+                
+                <Border BackgroundColor="{StaticResource SecondaryLight}"
+                        StrokeThickness="0"
+                        Padding="20,15"
+                        HorizontalOptions="Center">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="15" />
+                    </Border.StrokeShape>
+                    <Label Text="{Binding ScoreText}"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           TextColor="{StaticResource Primary}"
+                           HorizontalTextAlignment="Center" />
+                </Border>
+
+                <Label Text="Chưa có từ vựng để học"
+                       FontSize="17"
+                       HorizontalOptions="Center"
+                       TextColor="{StaticResource Gray600}"
+                       HorizontalTextAlignment="Center"
+                       IsVisible="{Binding CurrentWord, Converter={StaticResource InvertedBoolConverter}}" />
+
+                <Button Text="Quay lại"
+                        Command="{Binding FinishStudyCommand}"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="{StaticResource White}"
+                        FontSize="17"
+                        FontAttributes="Bold"
+                        Padding="0,18"
+                        CornerRadius="12"
+                        Margin="0,15,0,0">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource Primary}"
+                                Offset="0,4"
+                                Radius="8"
+                                Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>
+
