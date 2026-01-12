@@ -40,18 +40,6 @@ namespace Korean_Vocabulary_new.Pages
                 DifficultyLabel.Text = $"Độ khó: {(int)slider.Value}";
             }
         }
-
-        private void OnKoreanWordTextChanged(object? sender, TextChangedEventArgs e)
-        {
-            // Event handler for Korean word text changed
-            // The binding will handle the property update automatically
-        }
-
-        private void OnExampleSentenceTextChanged(object? sender, TextChangedEventArgs e)
-        {
-            // Event handler for example sentence text changed
-            // The binding will handle the property update automatically
-        }
     }
 }
 

@@ -1,4 +1,3 @@
-using Korean_Vocabulary_new.Models;
 using Korean_Vocabulary_new.ViewModels;
 
 namespace Korean_Vocabulary_new.Pages
@@ -20,11 +19,6 @@ namespace Korean_Vocabulary_new.Pages
             {
                 _viewModel.ApplyWordCount();
             }
-        }
-
-        private void OnModeChanged(object? sender, CheckedChangedEventArgs e)
-        {
-            // Mode changed, view model will handle it
         }
     }
 }

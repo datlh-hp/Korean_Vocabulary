@@ -23,7 +23,6 @@
                         <RoundRectangle CornerRadius="12" />
                     </Border.StrokeShape>
                     <Entry Text="{Binding Word.KoreanWord}"
-                           TextChanged="OnKoreanWordTextChanged"
                            Placeholder="Nhập từ tiếng Hàn"
                            PlaceholderColor="{StaticResource Gray900}"
                            FontSize="14"
@@ -204,7 +203,6 @@
                         <RoundRectangle CornerRadius="12" />
                     </Border.StrokeShape>
                     <Editor Text="{Binding Word.ExampleSentence}"
-                            TextChanged="OnExampleSentenceTextChanged"
                             Placeholder="Nhập câu ví dụ bằng tiếng Hàn"
                             HeightRequest="100"
                             PlaceholderColor="{StaticResource Gray900}"

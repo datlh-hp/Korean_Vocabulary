@@ -24,4 +24,3 @@ namespace Korean_Vocabulary_new.ViewModels
     }
 }
 
-

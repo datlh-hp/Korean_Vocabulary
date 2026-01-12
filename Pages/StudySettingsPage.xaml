@@ -45,12 +45,10 @@
             <Label Text="Chế độ học" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0" />
             <RadioButton Content="Tự động chọn (ưu tiên từ cần ôn)"
                         IsChecked="{Binding IsAutoMode}"
-                        GroupName="StudyMode"
-                        CheckedChanged="OnModeChanged" />
+                        GroupName="StudyMode" />
             <RadioButton Content="Ngẫu nhiên"
                         IsChecked="{Binding IsRandomMode}"
-                        GroupName="StudyMode"
-                        CheckedChanged="OnModeChanged" />
+                        GroupName="StudyMode" />
 
             <!-- Reverse mode -->
             <Label Text="Chế độ học ngược" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0" />

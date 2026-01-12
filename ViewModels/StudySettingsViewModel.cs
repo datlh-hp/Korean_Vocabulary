@@ -1,6 +1,7 @@
 using Korean_Vocabulary_new.Models;
 using Korean_Vocabulary_new.Services;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace Korean_Vocabulary_new.ViewModels
@@ -23,10 +24,8 @@ namespace Korean_Vocabulary_new.ViewModels
         public StudySettingsViewModel(DatabaseService databaseService)
         {
             _databaseService = databaseService;
-            _wordCountText = "10";
             CancelCommand = new Command(async () => await CancelAsync());
             StartStudyCommand = new Command(async () => await StartStudyAsync(), () => CanStartStudy);
-            LoadDataCommand = new Command(async () => await LoadDataAsync());
 
             // Load word types
             var wordTypes = WordTypeHelper.GetWordTypes();
@@ -36,7 +35,7 @@ namespace Korean_Vocabulary_new.ViewModels
                 WordTypes.Add(wordType);
             }
 
-            Task.Run(LoadDataAsync);
+            Task.Run(LoadCategoriesAsync);
         }
 
         public ObservableCollection<Category> Categories
@@ -164,12 +163,6 @@ namespace Korean_Vocabulary_new.ViewModels
 
         public ICommand CancelCommand { get; }
         public ICommand StartStudyCommand { get; }
-        public ICommand LoadDataCommand { get; }
-
-        private async Task LoadDataAsync()
-        {
-            await LoadCategoriesAsync();
-        }
 
         private async Task LoadCategoriesAsync()
         {
