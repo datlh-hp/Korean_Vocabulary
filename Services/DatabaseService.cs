@@ -1,5 +1,6 @@
-using SQLite;
 using Korean_Vocabulary_new.Models;
+using SQLite;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Korean_Vocabulary_new.Services
@@ -77,7 +78,7 @@ namespace Korean_Vocabulary_new.Services
                 // Ensure existing default categories have DisplayOrder set
                 var allCategories = await _database!.Table<Category>().ToListAsync();
                 var defaultCategoryNames = new[] { "Tất cả", "Yêu thích", "Mới học", "Cần ôn lại" };
-                
+
                 for (int i = 0; i < defaultCategoryNames.Length; i++)
                 {
                     var category = allCategories.FirstOrDefault(c => c.Name == defaultCategoryNames[i]);
@@ -97,12 +98,6 @@ namespace Korean_Vocabulary_new.Services
             return await _database!.Table<VocabularyWord>().OrderByDescending(w => w.CreatedDate).ToListAsync();
         }
 
-        public async Task<VocabularyWord> GetWordAsync(string KoreanWord)
-        {
-            await WaitForDatabase();
-            return await _database!.Table<VocabularyWord>().FirstOrDefaultAsync(x => x.KoreanWord.Equals(KoreanWord, StringComparison.OrdinalIgnoreCase));
-        }
-
         public async Task<List<VocabularyWord>> GetWordsByCategoryAsync(string? category)
         {
             await WaitForDatabase();
@@ -119,10 +114,19 @@ namespace Korean_Vocabulary_new.Services
             }
             else
             {
-                return await _database!.Table<VocabularyWord>()
-                    .Where(w => w.Category == category)
-                    .OrderByDescending(w => w.CreatedDate)
+                // Support both single category and multiple categories (comma-separated)
+                // Load all words first, then filter in memory because SQLite.NET cannot translate
+                // string concatenation operations (category + ",") to SQL
+                var allWords = await _database!.Table<VocabularyWord>()
+                    .Where(w => w.Category != null)
                     .ToListAsync();
+
+                return allWords
+                    .Where(w => w.Category == category ||
+                               w.Category!.Contains(category + ",") ||
+                               w.Category.Contains("," + category))
+                    .OrderByDescending(w => w.CreatedDate)
+                    .ToList();
             }
         }
 
@@ -138,7 +142,7 @@ namespace Korean_Vocabulary_new.Services
             if (excludeId > 0)
             {
                 return await _database!.Table<VocabularyWord>()
-                    .Where(w => w.KoreanWord.ToLower().Replace(" ","") == koreanWord.ToLower().Replace(" ", "") && w.Id != excludeId)
+                    .Where(w => w.KoreanWord.ToLower().Replace(" ", "") == koreanWord.ToLower().Replace(" ", "") && w.Id != excludeId)
                     .FirstOrDefaultAsync();
             }
             return await _database!.Table<VocabularyWord>()
@@ -170,7 +174,7 @@ namespace Korean_Vocabulary_new.Services
         {
             await WaitForDatabase();
             return await _database!.Table<VocabularyWord>()
-                .Where(w => w.KoreanWord.ToLower().Replace(" ","").Contains(searchText.ToLower().Replace(" ", "")) || 
+                .Where(w => w.KoreanWord.ToLower().Replace(" ", "").Contains(searchText.ToLower().Replace(" ", "")) ||
                            w.VietnameseMeaning.ToLower().Replace(" ", "").Contains(searchText.ToLower().Replace(" ", "")) ||
                            (w.Pronunciation != null && w.Pronunciation.ToLower().Replace(" ", "").Contains(searchText.ToLower().Replace(" ", ""))))
                 .OrderByDescending(w => w.CreatedDate)
@@ -183,7 +187,7 @@ namespace Korean_Vocabulary_new.Services
             await WaitForDatabase();
             return await _database!.Table<Category>().OrderBy(c => c.DisplayOrder).ThenBy(c => c.Name).ToListAsync();
         }
-        
+
         public async Task UpdateCategoryOrderAsync(List<Category> categories)
         {
             await WaitForDatabase();
@@ -242,10 +246,10 @@ namespace Korean_Vocabulary_new.Services
         public async Task<List<VocabularyWord>> GetWordsForStudyAsync(int count = 10)
         {
             await WaitForDatabase();
-            
+
             // Get all words first
             var allWords = await _database!.Table<VocabularyWord>().ToListAsync();
-            
+
             if (allWords.Count == 0)
             {
                 return new List<VocabularyWord>();
@@ -253,7 +257,7 @@ namespace Korean_Vocabulary_new.Services
 
             // Prioritize words that need review (not studied or low correct rate)
             var wordsToReview = allWords
-                .Where(w => w.StudyCount == 0 || 
+                .Where(w => w.StudyCount == 0 ||
                            w.LastStudiedDate == DateTime.MinValue ||
                            (w.StudyCount > 0 && (double)w.CorrectCount / w.StudyCount < 0.7))
                 .OrderBy(w => w.LastStudiedDate == DateTime.MinValue ? 0 : 1)
@@ -271,7 +275,7 @@ namespace Korean_Vocabulary_new.Services
                     .OrderByDescending(w => w.CreatedDate)
                     .Take(remainingCount)
                     .ToList();
-                
+
                 wordsToReview.AddRange(additionalWords);
             }
 
@@ -280,26 +284,30 @@ namespace Korean_Vocabulary_new.Services
             return wordsToReview.OrderBy(x => random.Next()).ToList();
         }
 
-        public async Task<List<VocabularyWord>> GetRandomWordsAsync(int count, string? category = null, string? wordType = null)
+        public async Task<List<VocabularyWord>> GetRandomWordsAsync(int count, List<CategorySelectionItem>? categorys = null, string? wordType = null)
         {
             await WaitForDatabase();
-            
+
             List<VocabularyWord> allWords;
 
+            var databaseWords = await _database!.Table<VocabularyWord>().ToListAsync();
             // Filter by category if specified
-            if (!string.IsNullOrEmpty(category) && category != "Tất cả")
+            if (categorys != null && categorys.Any(x => x.IsSelected) && categorys.Any(x => x.Category.Name == "Tất cả" && !x.IsSelected))
             {
-                if (category == "Yêu thích")
+                if (categorys.Any(x => x.Category.Name == "Yêu thích" && x.IsSelected))
                 {
-                    allWords = await _database!.Table<VocabularyWord>()
-                        .Where(w => w.IsFavorite)
-                        .ToListAsync();
+                    if (categorys.Any(x => x.Category.Name != "Yêu thích" && x.IsSelected))
+                    {
+                        allWords = databaseWords .Where(w => w.IsFavorite || CheckCategoryMatch(w.Category, categorys)).ToList();
+                    }
+                    else
+                    {
+                        allWords = databaseWords.Where(w => w.IsFavorite).ToList();
+                    }
                 }
                 else
                 {
-                    allWords = await _database!.Table<VocabularyWord>()
-                        .Where(w => w.Category == category)
-                        .ToListAsync();
+                    allWords = databaseWords .Where(w => CheckCategoryMatch(w.Category, categorys)).ToList();
                 }
             }
             else
@@ -312,7 +320,7 @@ namespace Korean_Vocabulary_new.Services
             {
                 allWords = allWords.Where(w => w.WordType == wordType).ToList();
             }
-            
+
             if (allWords.Count == 0)
             {
                 return new List<VocabularyWord>();
@@ -321,6 +329,26 @@ namespace Korean_Vocabulary_new.Services
             // Shuffle and take count
             var random = new Random();
             return allWords.OrderBy(x => random.Next()).Take(count).ToList();
+        }
+
+        private bool CheckCategoryMatch(string? categoryName, List<CategorySelectionItem> categorysCheck)
+        {
+            if(categoryName == null)
+            {
+                return false;
+            }
+
+            foreach (var categoryItem in categorysCheck)
+            {
+                if (categoryItem.IsSelected)
+                {
+                    if(categoryName.Contains(categoryItem.Category.Name))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private async Task WaitForDatabase()

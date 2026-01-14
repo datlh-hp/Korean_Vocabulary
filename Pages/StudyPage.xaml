@@ -90,7 +90,7 @@
                                 Padding="0"
                                 CornerRadius="12"
                                 IsVisible="{Binding IsReverseMode, Converter={StaticResource InvertedBoolConverter}}" />
-                        <Button Text="🔊"
+                        <!--<Button Text="🔊"
                                 Command="{Binding SpeakVietnameseCommand}"
                                 BackgroundColor="Transparent"
                                 TextColor="{StaticResource Primary}"
@@ -99,7 +99,7 @@
                                 HeightRequest="50"
                                 Padding="0"
                                 CornerRadius="12"
-                                IsVisible="{Binding IsReverseMode}" />
+                                IsVisible="{Binding IsReverseMode}" />-->
                     </Border>
                 </Grid>
                 
@@ -174,6 +174,27 @@
                                     HeightRequest="45"
                                     VerticalOptions="Center"
                                     IsVisible="{Binding IsReverseMode}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Button Text="🔊"
+                                        Command="{Binding SpeakKoreanCommand}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="{StaticResource Primary}"
+                                        FontSize="20"
+                                        WidthRequest="45"
+                                        HeightRequest="45"
+                                        Padding="0"
+                                        CornerRadius="10" />
+                            </Border>
+                            <Border Grid.Column="1"
+                                    BackgroundColor="{StaticResource White}"
+                                    StrokeThickness="0"
+                                    Padding="0"
+                                    WidthRequest="45"
+                                    HeightRequest="45"
+                                    VerticalOptions="Center"
+                                    IsVisible="{Binding IsReverseMode, Converter={StaticResource InvertedBoolConverter}}">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
@@ -301,6 +322,7 @@
                             Text="{Binding Choice1}"
                             Command="{Binding SelectChoiceCommand}"
                             CommandParameter="0"
+                            IsEnabled="{Binding ShowAnswer, Converter={StaticResource InvertedBoolConverter}}"
                             BackgroundColor="{StaticResource White}"
                             TextColor="{StaticResource Primary}"
                             FontSize="16"
@@ -308,7 +330,8 @@
                             Padding="0,18"
                             CornerRadius="12"
                             BorderWidth="2"
-                            BorderColor="{StaticResource Primary}">
+                            BorderColor="{StaticResource Primary}"
+                            IsVisible="{Binding Choice1, Converter={StaticResource IsNotNullConverter}}">
                         <Button.Shadow>
                             <Shadow Brush="{StaticResource Gray300}"
                                     Offset="0,2"
@@ -320,6 +343,7 @@
                             Text="{Binding Choice2}"
                             Command="{Binding SelectChoiceCommand}"
                             CommandParameter="1"
+                            IsEnabled="{Binding ShowAnswer, Converter={StaticResource InvertedBoolConverter}}"
                             BackgroundColor="{StaticResource White}"
                             TextColor="{StaticResource Primary}"
                             FontSize="16"
@@ -327,7 +351,8 @@
                             Padding="0,18"
                             CornerRadius="12"
                             BorderWidth="2"
-                            BorderColor="{StaticResource Primary}">
+                            BorderColor="{StaticResource Primary}"
+                            IsVisible="{Binding Choice2, Converter={StaticResource IsNotNullConverter}}">
                         <Button.Shadow>
                             <Shadow Brush="{StaticResource Gray300}"
                                     Offset="0,2"
@@ -339,6 +364,7 @@
                             Text="{Binding Choice3}"
                             Command="{Binding SelectChoiceCommand}"
                             CommandParameter="2"
+                            IsEnabled="{Binding ShowAnswer, Converter={StaticResource InvertedBoolConverter}}"
                             BackgroundColor="{StaticResource White}"
                             TextColor="{StaticResource Primary}"
                             FontSize="16"
@@ -346,7 +372,8 @@
                             Padding="0,18"
                             CornerRadius="12"
                             BorderWidth="2"
-                            BorderColor="{StaticResource Primary}">
+                            BorderColor="{StaticResource Primary}"
+                            IsVisible="{Binding Choice3, Converter={StaticResource IsNotNullConverter}}">
                         <Button.Shadow>
                             <Shadow Brush="{StaticResource Gray300}"
                                     Offset="0,2"
@@ -358,6 +385,7 @@
                             Text="{Binding Choice4}"
                             Command="{Binding SelectChoiceCommand}"
                             CommandParameter="3"
+                            IsEnabled="{Binding ShowAnswer, Converter={StaticResource InvertedBoolConverter}}"
                             BackgroundColor="{StaticResource White}"
                             TextColor="{StaticResource Primary}"
                             FontSize="16"
@@ -365,7 +393,8 @@
                             Padding="0,18"
                             CornerRadius="12"
                             BorderWidth="2"
-                            BorderColor="{StaticResource Primary}">
+                            BorderColor="{StaticResource Primary}"
+                            IsVisible="{Binding Choice4, Converter={StaticResource IsNotNullConverter}}">
                         <Button.Shadow>
                             <Shadow Brush="{StaticResource Gray300}"
                                     Offset="0,2"

@@ -9,7 +9,7 @@ namespace Korean_Vocabulary_new.ViewModels
     public class StudySettingsViewModel : BaseViewModel
     {
         private readonly DatabaseService _databaseService;
-        private ObservableCollection<Category> _categories = new();
+        private ObservableCollection<CategorySelectionItem> _categories = new();
         private ObservableCollection<string> _wordTypes = new();
         private Category? _selectedCategoryItem;
         private string _selectedCategory = "Tất cả";
@@ -38,7 +38,7 @@ namespace Korean_Vocabulary_new.ViewModels
             Task.Run(LoadCategoriesAsync);
         }
 
-        public ObservableCollection<Category> Categories
+        public ObservableCollection<CategorySelectionItem> Categories
         {
             get => _categories;
             set => SetProperty(ref _categories, value);
@@ -173,16 +173,40 @@ namespace Korean_Vocabulary_new.ViewModels
                 {
                     Categories.Clear();
                     // Add "Tất cả" option
-                    Categories.Add(new Category { Name = "Tất cả", Color = "#512BD4" });
+                    Categories.Add(new CategorySelectionItem { IsSelected = true, Category = new Category { Name = "Tất cả", Color = "#512BD4" } });
                     foreach (var category in categories.Where(c => c.Name != "Tất cả"))
                     {
-                        Categories.Add(category);
+                        Categories.Add(new CategorySelectionItem { IsSelected = false, Category = category });
                     }
                 });
             }
             catch (Exception ex)
             {
                 await Application.Current!.MainPage!.DisplayAlert("Lỗi", $"Không thể tải danh mục: {ex.Message}", "OK");
+            }
+        }
+
+        private void UpdateCategorySelectionsFromWord(string? categoryString)
+        {
+            if (string.IsNullOrEmpty(categoryString))
+            {
+                // Clear all selections
+                foreach (var selection in Categories)
+                {
+                    selection.IsSelected = false;
+                }
+                return;
+            }
+
+            // Parse comma-separated categories
+            var selectedCategoryNames = categoryString.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(c => c.Trim())
+                .ToList();
+
+            // Update selections
+            foreach (var selection in Categories)
+            {
+                selection.IsSelected = selectedCategoryNames.Contains(selection.Category.Name);
             }
         }
 
@@ -204,7 +228,7 @@ namespace Korean_Vocabulary_new.ViewModels
             }
             else // IsRandomMode
             {
-                wordsToStudy = await _databaseService.GetRandomWordsAsync(WordCount, SelectedCategory, SelectedWordType);
+                wordsToStudy = await _databaseService.GetRandomWordsAsync(WordCount, Categories.ToList(), SelectedWordType);
             }
 
             if (wordsToStudy.Count == 0)

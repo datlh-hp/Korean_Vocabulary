@@ -25,7 +25,7 @@ namespace Korean_Vocabulary_new.Services
             try
             {
                 var words = await _databaseService.GetAllWordsAsync();
-                
+
                 if (words.Count == 0)
                 {
                     await Application.Current!.MainPage!.DisplayAlert(
@@ -164,7 +164,7 @@ namespace Korean_Vocabulary_new.Services
                 // Import words
                 foreach (var importWord in importData)
                 {
-                    if (string.IsNullOrWhiteSpace(importWord.KoreanWord) || 
+                    if (string.IsNullOrWhiteSpace(importWord.KoreanWord) ||
                         string.IsNullOrWhiteSpace(importWord.VietnameseMeaning))
                     {
                         skippedCount++;
@@ -174,11 +174,30 @@ namespace Korean_Vocabulary_new.Services
                     // Check if word already exists (only if Merge mode)
                     if (action == "Merge (Giữ từ cũ, thêm mới)")
                     {
-                        var existingWord = await _databaseService.GetWordAsync(importWord.KoreanWord);
+
+                        var existingWord = (await _databaseService.GetAllWordsAsync())
+                            .FirstOrDefault(x => x.KoreanWord.Equals(importWord.KoreanWord, StringComparison.OrdinalIgnoreCase));
                         if (existingWord != null)
                         {
                             skippedCount++;
-                            existingWord.Category = importWord.Category?.Trim() ?? existingWord.Category;
+                            if (string.IsNullOrWhiteSpace(importWord.Category))
+                            {
+                                continue;
+                            }
+
+                            if (string.IsNullOrWhiteSpace(existingWord.Category))
+                            {
+                                existingWord.Category = importWord.Category;
+
+                                await _databaseService.SaveWordAsync(existingWord);
+                                continue;
+                            }
+
+                            if (existingWord.Category.ToLower().Contains(importWord.Category!.ToLower()))
+                            {
+                                continue;
+                            }
+                            existingWord.Category += ", " + importWord.Category;
                             await _databaseService.SaveWordAsync(existingWord);
                             continue;
                         }

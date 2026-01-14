@@ -40,18 +40,19 @@ namespace Korean_Vocabulary_new.ViewModels
             SpeakVietnameseCommand = new Command(async () => await SpeakVietnameseAsync());
             SelectChoiceCommand = new Command<string>(async (param) => await SelectChoiceAsync(param));
 
-            // Delay start to ensure database is ready
-            Task.Run(async () =>
-            {
-                await Task.Delay(500); // Wait for database initialization
-                await StartStudyAsync();
-            });
+            // Don't auto-start here - wait for SetWordIds to be called from StudyPage
+            // This ensures QueryProperties (MultipleChoice, ReverseMode) are set first
         }
 
         public void SetWordIds(List<int> wordIds)
         {
             _wordIds = wordIds;
-            Task.Run(StartStudyAsync);
+            // Start study after a small delay to ensure all properties are set
+            Task.Run(async () =>
+            {
+                await Task.Delay(100); // Small delay to ensure modes are set
+                await StartStudyAsync();
+            });
         }
 
         public void SetReverseMode(bool isReverseMode)
@@ -69,7 +70,13 @@ namespace Korean_Vocabulary_new.ViewModels
         {
             if (SetProperty(ref _isMultipleChoiceMode, isMultipleChoiceMode))
             {
-                UpdateChoices();
+                OnPropertyChanged(nameof(IsMultipleChoiceMode));
+                // Update choices if we have a current word
+                // If CurrentWord is null, UpdateChoices will be called when CurrentWord is set
+                if (CurrentWord != null)
+                {
+                    UpdateChoices();
+                }
             }
         }
 
@@ -428,7 +435,7 @@ namespace Korean_Vocabulary_new.ViewModels
             }
 
             // Get random words for multiple choice options
-            var allWords = await _databaseService.GetRandomWordsAsync(10, "Tất cả", "Tất cả");
+            var allWords = await _databaseService.GetRandomWordsAsync(10);
             var correctAnswer = IsReverseMode ? CurrentWord.KoreanWord : CurrentWord.VietnameseMeaning;
             
             // Filter out the correct answer and current word

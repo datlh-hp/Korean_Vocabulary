@@ -423,7 +423,7 @@
                     </Button.Shadow>
                 </Button>
                 <Button Grid.Column="2"
-                        Text="TOPIK"
+                        Text="Import"
                         Command="{Binding ImportTopikCommand}"
                         BackgroundColor="{StaticResource Primary}"
                         Padding="12,14"

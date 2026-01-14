@@ -2,6 +2,7 @@ using Korean_Vocabulary_new.Models;
 using Korean_Vocabulary_new.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace Korean_Vocabulary_new.ViewModels
@@ -12,10 +13,8 @@ namespace Korean_Vocabulary_new.ViewModels
         private readonly TranslationService _translationService;
         private readonly AudioService _audioService;
         private VocabularyWord _word = new();
-        private ObservableCollection<Category> _categories = new();
+        private ObservableCollection<CategorySelectionItem> _categorySelections = new();
         private ObservableCollection<string> _wordTypes = new();
-        private Category? _selectedCategoryItem;
-        private string _selectedCategory = string.Empty;
         private string _selectedWordType = string.Empty;
         private bool _isAutoFilling = false;
         private string _lastAutoFilledKoreanWord = string.Empty;
@@ -30,7 +29,7 @@ namespace Korean_Vocabulary_new.ViewModels
             SaveCommand = new Command(async () => await SaveWordAsync(), () => IsValid);
             CancelCommand = new Command(async () => await CancelAsync());
             LoadCategoriesCommand = new Command(async () => await LoadCategoriesAsync());
-            AutoFillCommand = new Command(async () => await AutoFillAsync(), () => !IsAutoFilling && !string.IsNullOrWhiteSpace(Word.KoreanWord));
+            AutoFillCommand = new Command(async () => await AutoFillAsync());
             TranslateExampleCommand = new Command(async () => await TranslateExampleAsync(), () => !IsTranslatingExample && !string.IsNullOrWhiteSpace(Word.ExampleSentence));
             SpeakKoreanCommand = new Command(async () => await SpeakKoreanAsync());
             SpeakVietnameseCommand = new Command(async () => await SpeakVietnameseAsync());
@@ -67,19 +66,10 @@ namespace Korean_Vocabulary_new.ViewModels
 
                 if (value != null)
                 {
-                    SelectedCategory = value.Category ?? string.Empty;
                     SelectedWordType = value.WordType ?? string.Empty;
                     
-                    // Set SelectedCategoryItem to match
-                    if (!string.IsNullOrEmpty(value.Category))
-                    {
-                        var category = Categories.FirstOrDefault(c => c.Name == value.Category);
-                        if (category != null)
-                        {
-                            _selectedCategoryItem = category;
-                            OnPropertyChanged(nameof(SelectedCategoryItem));
-                        }
-                    }
+                    // Load selected categories from word
+                    UpdateCategorySelectionsFromWord(value.Category);
                     
                     // Cập nhật IsValid và trạng thái nút Lưu sau khi set Word
                     OnPropertyChanged(nameof(IsValid));
@@ -91,35 +81,10 @@ namespace Korean_Vocabulary_new.ViewModels
             }
         }
 
-        public ObservableCollection<Category> Categories
+        public ObservableCollection<CategorySelectionItem> CategorySelections
         {
-            get => _categories;
-            set => SetProperty(ref _categories, value);
-        }
-
-        public string SelectedCategory
-        {
-            get => _selectedCategory;
-            set
-            {
-                SetProperty(ref _selectedCategory, value);
-                if (Word != null)
-                {
-                    Word.Category = value;
-                }
-            }
-        }
-
-        public Category? SelectedCategoryItem
-        {
-            get => _selectedCategoryItem;
-            set
-            {
-                if (SetProperty(ref _selectedCategoryItem, value) && value != null)
-                {
-                    SelectedCategory = value.Name;
-                }
-            }
+            get => _categorySelections;
+            set => SetProperty(ref _categorySelections, value);
         }
 
         public ObservableCollection<string> WordTypes
@@ -223,19 +188,10 @@ namespace Korean_Vocabulary_new.ViewModels
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     Word = word;
-                    SelectedCategory = word.Category ?? string.Empty;
                     SelectedWordType = word.WordType ?? string.Empty;
                     
-                    // Set SelectedCategoryItem to match
-                    if (!string.IsNullOrEmpty(word.Category))
-                    {
-                        var category = Categories.FirstOrDefault(c => c.Name == word.Category);
-                        if (category != null)
-                        {
-                            _selectedCategoryItem = category;
-                            OnPropertyChanged(nameof(SelectedCategoryItem));
-                        }
-                    }
+                    // Update category selections from word
+                    UpdateCategorySelectionsFromWord(word.Category);
                     
                     // Cập nhật IsValid và trạng thái nút Lưu sau khi load từ
                     OnPropertyChanged(nameof(IsValid));
@@ -251,27 +207,54 @@ namespace Korean_Vocabulary_new.ViewModels
                 var categories = await _databaseService.GetAllCategoriesAsync();
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    Categories.Clear();
+                    CategorySelections.Clear();
                     foreach (var category in categories)
                     {
-                        Categories.Add(category);
+                        // Skip "Tất cả" category as it's not meant to be selected
+                        if (category.Name == "Tất cả" || category.Name == "Yêu thích")
+                            continue;
+                            
+                        CategorySelections.Add(new CategorySelectionItem
+                        {
+                            Category = category,
+                            IsSelected = false
+                        });
                     }
                     
-                    // Update SelectedCategoryItem if category name matches
-                    if (!string.IsNullOrEmpty(SelectedCategory))
+                    // Update selections if word already has categories
+                    if (Word != null && !string.IsNullOrEmpty(Word.Category))
                     {
-                        var category = Categories.FirstOrDefault(c => c.Name == SelectedCategory);
-                        if (category != null)
-                        {
-                            _selectedCategoryItem = category;
-                            OnPropertyChanged(nameof(SelectedCategoryItem));
-                        }
+                        UpdateCategorySelectionsFromWord(Word.Category);
                     }
                 });
             }
             catch (Exception ex)
             {
                 await Application.Current!.MainPage!.DisplayAlert("Lỗi", $"Không thể tải danh mục: {ex.Message}", "OK");
+            }
+        }
+
+        private void UpdateCategorySelectionsFromWord(string? categoryString)
+        {
+            if (string.IsNullOrEmpty(categoryString))
+            {
+                // Clear all selections
+                foreach (var selection in CategorySelections)
+                {
+                    selection.IsSelected = false;
+                }
+                return;
+            }
+
+            // Parse comma-separated categories
+            var selectedCategoryNames = categoryString.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(c => c.Trim())
+                .ToList();
+
+            // Update selections
+            foreach (var selection in CategorySelections)
+            {
+                selection.IsSelected = selectedCategoryNames.Contains(selection.Category.Name);
             }
         }
 
@@ -322,7 +305,12 @@ namespace Korean_Vocabulary_new.ViewModels
                     }
                 }
 
-                Word.Category = SelectedCategory;
+                // Save selected categories as comma-separated string
+                var selectedCategories = CategorySelections
+                    .Where(cs => cs.IsSelected)
+                    .Select(cs => cs.Category.Name)
+                    .ToList();
+                Word.Category = selectedCategories.Any() ? string.Join(",", selectedCategories) : null;
                 Word.WordType = SelectedWordType;
                 await _databaseService.SaveWordAsync(Word);
                 await Shell.Current.GoToAsync("..");

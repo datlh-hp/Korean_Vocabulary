@@ -56,14 +56,14 @@ namespace Korean_Vocabulary_new.Pages
             InitializeComponent();
             BindingContext = viewModel;
             _viewModel = viewModel;
-            
-            // Load words, reverse mode and multiple choice mode if parameters were set before viewModel was assigned
-            if (!string.IsNullOrEmpty(_wordIdsString))
-            {
-                var ids = _wordIdsString.Split(',').Where(s => int.TryParse(s, out _)).Select(int.Parse).ToList();
-                _viewModel.SetWordIds(ids);
-            }
+        }
 
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            
+            // Set reverse mode and multiple choice mode FIRST, before loading words
+            // This ensures the mode is set before CurrentWord is assigned
             if (!string.IsNullOrEmpty(_reverseModeString))
             {
                 bool isReverseMode = _reverseModeString.Equals("true", StringComparison.OrdinalIgnoreCase);
@@ -74,6 +74,13 @@ namespace Korean_Vocabulary_new.Pages
             {
                 bool isMultipleChoice = _multipleChoiceString.Equals("true", StringComparison.OrdinalIgnoreCase);
                 _viewModel.SetMultipleChoiceMode(isMultipleChoice);
+            }
+
+            // Load words LAST, so CurrentWord is set after modes are configured
+            if (!string.IsNullOrEmpty(_wordIdsString))
+            {
+                var ids = _wordIdsString.Split(',').Where(s => int.TryParse(s, out _)).Select(int.Parse).ToList();
+                _viewModel.SetWordIds(ids);
             }
         }
     }
