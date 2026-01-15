@@ -193,7 +193,7 @@ namespace Korean_Vocabulary_new.Services
                                 continue;
                             }
 
-                            if (existingWord.Category.ToLower().Contains(importWord.Category!.ToLower()))
+                            if (CheckCategoryMatch(existingWord.Category, importWord.Category))
                             {
                                 continue;
                             }
@@ -236,6 +236,23 @@ namespace Korean_Vocabulary_new.Services
                     "OK");
                 return false;
             }
+        }
+        private bool CheckCategoryMatch(string? cateExisting, string? cateImport)
+        {
+            if (cateExisting == null || cateImport == null)
+            {
+                return false;
+            }
+
+            foreach (var item in cateImport.Split(','))
+            {
+                var itemTrimmed = item.TrimStart().TrimEnd();
+                if (cateExisting.Contains(itemTrimmed))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private async Task ShareFileAsync(string filePath, string fileName)

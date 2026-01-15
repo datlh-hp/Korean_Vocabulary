@@ -186,30 +186,6 @@ namespace Korean_Vocabulary_new.ViewModels
             }
         }
 
-        private void UpdateCategorySelectionsFromWord(string? categoryString)
-        {
-            if (string.IsNullOrEmpty(categoryString))
-            {
-                // Clear all selections
-                foreach (var selection in Categories)
-                {
-                    selection.IsSelected = false;
-                }
-                return;
-            }
-
-            // Parse comma-separated categories
-            var selectedCategoryNames = categoryString.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .Select(c => c.Trim())
-                .ToList();
-
-            // Update selections
-            foreach (var selection in Categories)
-            {
-                selection.IsSelected = selectedCategoryNames.Contains(selection.Category.Name);
-            }
-        }
-
         private async Task CancelAsync()
         {
             await Shell.Current.GoToAsync("..");

@@ -12,8 +12,8 @@ namespace Korean_Vocabulary_new.ViewModels
         private readonly AudioService _audioService;
         private readonly ExportImportService _exportImportService;
         private ObservableCollection<VocabularyWord> _words = new();
-        private ObservableCollection<Category> _categories = new();
-        private Category? _selectedCategoryItem;
+        private ObservableCollection<CategoryCount> _categories = new();
+        private CategoryCount? _selectedCategoryItem;
         private string _selectedCategory = "Tất cả";
         private string _searchText = string.Empty;
         private bool _isRefreshing;
@@ -54,7 +54,7 @@ namespace Korean_Vocabulary_new.ViewModels
             set => SetProperty(ref _words, value);
         }
 
-        public ObservableCollection<Category> Categories
+        public ObservableCollection<CategoryCount> Categories
         {
             get => _categories;
             set => SetProperty(ref _categories, value);
@@ -72,14 +72,14 @@ namespace Korean_Vocabulary_new.ViewModels
             }
         }
 
-        public Category? SelectedCategoryItem
+        public CategoryCount? SelectedCategoryItem
         {
             get => _selectedCategoryItem;
             set
             {
                 if (SetProperty(ref _selectedCategoryItem, value) && value != null)
                 {
-                    SelectedCategory = value.Name;
+                    SelectedCategory = value.data.Name;
                 }
             }
         }
@@ -209,12 +209,13 @@ namespace Korean_Vocabulary_new.ViewModels
                 await Task.Delay(100); // Give database time to initialize
                 
                 var categories = await _databaseService.GetAllCategoriesAsync();
-                MainThread.BeginInvokeOnMainThread(() =>
+                MainThread.BeginInvokeOnMainThread(async () =>
                 {
                     Categories.Clear();
                     foreach (var category in categories)
                     {
-                        Categories.Add(category);
+                        var count = await _databaseService.CountWordsByCategoryAsync(category.Name);
+                        Categories.Add(new CategoryCount(category, count));
                     }
                 });
             }

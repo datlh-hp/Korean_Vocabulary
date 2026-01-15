@@ -151,21 +151,6 @@ namespace Korean_Vocabulary_new.Pages
             }
         }
 
-        private async void SetStarIconsFromDatabase()
-        {
-            if (_viewModel == null) return;
-
-            var databaseService = _viewModel.GetDatabaseService();
-            if (databaseService == null) return;
-
-            // Tìm tất cả ImageButton trong CollectionView và set icon
-            // Note: Cần đợi CollectionView được render xong
-            await Task.Delay(200);
-
-            // Cách tốt hơn: Set icon trong ItemTemplate hoặc dùng Loaded event
-            // Tạm thời để OnFavoriteClicked xử lý việc set icon
-        }
-
         private void SearchBarControl_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is SearchBar searchBar && _viewModel != null)

@@ -11,16 +11,18 @@ namespace Korean_Vocabulary_new.ViewModels
         private int _categoryId;
         private string _name = string.Empty;
         private string _color = "#512BD4";
-        private double _redValue = 81;
-        private double _greenValue = 43;
-        private double _blueValue = 212;
+        private static Random _rd = new Random();
+        private double _redValue = _rd.Next(0, 255);
+        private double _greenValue = _rd.Next(0, 255);
+        private double _blueValue = _rd.Next(0, 255);
 
         public AddEditCategoryViewModel(DatabaseService databaseService)
         {
             _databaseService = databaseService;
             SaveCommand = new Command(async () => await SaveCategoryAsync(), () => CanSave);
             CancelCommand = new Command(async () => await CancelAsync());
-            
+
+            UpdateColorFromRgb();
             // Initialize RGB values from default color
             UpdateRgbFromColor(_color);
         }

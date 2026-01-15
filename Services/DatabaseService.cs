@@ -122,11 +122,31 @@ namespace Korean_Vocabulary_new.Services
                     .ToListAsync();
 
                 return allWords
-                    .Where(w => w.Category == category ||
-                               w.Category!.Contains(category + ",") ||
-                               w.Category.Contains("," + category))
+                    .Where(w => w.Category.Contains(category))
                     .OrderByDescending(w => w.CreatedDate)
                     .ToList();
+            }
+        }
+
+        public async Task<int> CountWordsByCategoryAsync(string? category)
+        {
+            await WaitForDatabase();
+            if (string.IsNullOrEmpty(category) || category == "Tất cả")
+            {
+                return (await GetAllWordsAsync()).Count;
+            }
+            else if (category == "Yêu thích")
+            {
+                return (await _database!.Table<VocabularyWord>()
+                    .Where(w => w.IsFavorite).ToListAsync()).Count;
+            }
+            else
+            {
+                var allWords = await _database!.Table<VocabularyWord>()
+                    .Where(w => w.Category != null)
+                    .ToListAsync();
+
+                return allWords.Where(w => w.Category.Contains(category)).Count();
             }
         }
 

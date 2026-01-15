@@ -152,21 +152,32 @@
                             <LinearItemsLayout Orientation="Vertical" ItemSpacing="5" />
                         </CollectionView.ItemsLayout>
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="models:Category">
+                            <DataTemplate x:DataType="models:CategoryCount">
                                 
                                 <Border StrokeThickness="2"
-                                        Stroke="{Binding Color}"
+                                        Stroke="{Binding data.Color}"
                                         BackgroundColor="{StaticResource Gray50}"
                                         Padding="15,12"
                                         Margin="10,5,10,5">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="12" />
                                     </Border.StrokeShape>
-                                    <Label Text="{Binding Name}"
-                                           TextColor="{Binding Color}"
-                                           FontSize="15"
-                                           FontAttributes="Bold"
-                                           VerticalOptions="Center" />
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0" 
+                                            Text="{Binding data.Name}"
+                                            TextColor="{Binding data.Color}"
+                                            FontSize="15"
+                                            FontAttributes="Bold"
+                                            VerticalOptions="Center"/>
+                                        <Label Grid.Column="1"
+                                            Text="{Binding Count}" 
+                                            TextColor="{Binding data.Color}"
+                                            FontSize="15"
+                                            FontAttributes="Bold"
+                                            VerticalOptions="Center" />
+                                    </Grid>
+
+
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
