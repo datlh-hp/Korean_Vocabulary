@@ -102,7 +102,7 @@
             </Grid>
 
             <!-- Buttons -->
-            <Grid ColumnDefinitions="*,*" Margin="0,30,0,0" ColumnSpacing="10">
+            <Grid ColumnDefinitions="*,*,*" Margin="0,30,0,0" ColumnSpacing="10">
                 <Button Grid.Column="0"
                         Text="Hủy"
                         Command="{Binding CancelCommand}"
@@ -111,6 +111,10 @@
                         Text="Lưu"
                         Command="{Binding SaveCommand}"
                         BackgroundColor="{StaticResource Primary}" />
+                <Button Grid.Column="2"
+                        Text="Lưu nhiều"
+                        Command="{Binding SaveManyCommand}"
+                        BackgroundColor="{StaticResource Primary}" />           
             </Grid>
         </VerticalStackLayout>
     </ScrollView>

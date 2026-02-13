@@ -39,9 +39,9 @@
                     <DataTemplate x:DataType="models:Category">
                         <Grid Padding="15,12"
                               ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
-                            <Grid.GestureRecognizers>
+                            <!--<Grid.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="{Binding .}" />
-                            </Grid.GestureRecognizers>
+                            </Grid.GestureRecognizers>-->
                             
                             <!-- Color indicator -->
                             <BoxView Grid.Column="0"
@@ -66,7 +66,7 @@
                             </VerticalStackLayout>
 
                             <!-- Move Up button -->
-                            <Button Grid.Column="2"
+                            <!--<Button Grid.Column="2"
                                     ImageSource="arrow_up_icon_266660.png"
                                     FontSize="20"
                                     BackgroundColor="Transparent"
@@ -75,10 +75,13 @@
                                     CommandParameter="{Binding .}"
                                     WidthRequest="40"
                                     HeightRequest="40"
-                                    Padding="0" />
+                                    Padding="0" />-->
+                            <Label Text="{Binding DisplayOrder}" Grid.Column="2"></Label>
+                            <Entry Grid.Column="3"
+                                    Completed="OnOrderCompleted"/>
 
                             <!-- Move Down button -->
-                            <Button Grid.Column="3"
+                            <!--<Button Grid.Column="3"
                                     ImageSource="arrow_down_icon_266663.png"
                                     FontSize="20"
                                     BackgroundColor="Transparent"
@@ -87,7 +90,7 @@
                                     CommandParameter="{Binding .}"
                                     WidthRequest="40"
                                     HeightRequest="40"
-                                    Padding="0" />
+                                    Padding="0" />-->
 
                             <!-- Edit button -->
                             <ImageButton Grid.Column="4"

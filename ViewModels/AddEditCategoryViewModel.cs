@@ -20,6 +20,7 @@ namespace Korean_Vocabulary_new.ViewModels
         {
             _databaseService = databaseService;
             SaveCommand = new Command(async () => await SaveCategoryAsync(), () => CanSave);
+            SaveManyCommand = new Command(async () => await SaveManyCategoryAsync(), () => CanSave);
             CancelCommand = new Command(async () => await CancelAsync());
 
             UpdateColorFromRgb();
@@ -48,6 +49,7 @@ namespace Korean_Vocabulary_new.ViewModels
                 SetProperty(ref _name, value);
                 OnPropertyChanged(nameof(CanSave));
                 ((Command)SaveCommand).ChangeCanExecute();
+                ((Command)SaveManyCommand).ChangeCanExecute();
             }
         }
 
@@ -102,6 +104,7 @@ namespace Korean_Vocabulary_new.ViewModels
         public bool CanSave => !string.IsNullOrWhiteSpace(Name);
 
         public ICommand SaveCommand { get; }
+        public ICommand SaveManyCommand { get; }
         public ICommand CancelCommand { get; }
 
         private async Task LoadCategoryAsync()
@@ -152,10 +155,52 @@ namespace Korean_Vocabulary_new.ViewModels
 
                 category.Name = Name.Trim();
                 category.Color = Color;
-                var categories = await _databaseService.GetAllCategoriesAsync();
-                category.DisplayOrder = categories.Max(c => c.DisplayOrder) + 1;
 
                 await _databaseService.SaveCategoryAsync(category);
+                // Navigate back to CategoryListPage (relative navigation)
+                await Shell.Current.GoToAsync("..");
+            }
+            catch (Exception ex)
+            {
+                await Application.Current!.MainPage!.DisplayAlert("Lỗi", $"Không thể lưu danh mục: {ex.Message}", "OK");
+            }
+        }
+
+        private async Task SaveManyCategoryAsync()
+        {
+            if (string.IsNullOrWhiteSpace(Name) )
+            {
+                await Application.Current!.MainPage!.DisplayAlert("Lỗi", "Vui lòng nhập tên danh mục", "OK");
+                return;
+            }
+            if (!Name.Contains("%"))
+            {
+                await Application.Current!.MainPage!.DisplayAlert("Lỗi", "Phải có '%' để phân biệt các danh mục", "OK");
+                return;
+            }
+            try
+            {
+                var nameLst = Name.Split('%', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var category = new List<Category>();
+                foreach (var name in nameLst)
+                {
+                    var cat = new Category();
+                    cat.Name = name;
+                    var r = (int)_rd.Next(0, 255);
+                    var g = (int)_rd.Next(0, 255);
+                    var b = (int)_rd.Next(0, 255);
+
+                    // Clamp values
+                    r = Math.Max(0, Math.Min(255, r));
+                    g = Math.Max(0, Math.Min(255, g));
+                    b = Math.Max(0, Math.Min(255, b));
+
+                    var newColor = $"#{r:X2}{g:X2}{b:X2}";
+                    cat.Color = newColor;
+                    category.Add(cat);
+                }
+               
+                await _databaseService.SaveManyCategoryAsync(category);
                 // Navigate back to CategoryListPage (relative navigation)
                 await Shell.Current.GoToAsync("..");
             }

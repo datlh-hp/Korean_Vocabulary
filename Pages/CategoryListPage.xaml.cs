@@ -1,4 +1,4 @@
-using Korean_Vocabulary_new.Models;
+﻿using Korean_Vocabulary_new.Models;
 using Korean_Vocabulary_new.ViewModels;
 
 namespace Korean_Vocabulary_new.Pages
@@ -12,6 +12,7 @@ namespace Korean_Vocabulary_new.Pages
             InitializeComponent();
             BindingContext = viewModel;
             _viewModel = viewModel;
+
         }
 
         protected override void OnAppearing()
@@ -71,12 +72,26 @@ namespace Korean_Vocabulary_new.Pages
         {
             if (sender is Button button && button.CommandParameter is Category category && _viewModel != null)
             {
+                
                 if (_viewModel.MoveDownCommand.CanExecute(category))
                 {
                     _viewModel.MoveDownCommand.Execute(category);
                 }
             }
         }
+
+        private void OnOrderCompleted(object sender, EventArgs e)
+        {
+            var entry = (Entry)sender;
+            var category = (Category)entry.BindingContext;
+            // Lúc này entry.Text chứa giá trị nhập
+            (int,int) data = (category.Id, int.Parse(entry.Text));
+            if (_viewModel.ChangeOrderCommand.CanExecute(data))
+            {
+                _viewModel.ChangeOrderCommand.Execute(data);
+            }
+        }
+
     }
 }
 

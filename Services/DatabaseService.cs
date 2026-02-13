@@ -240,6 +240,24 @@ namespace Korean_Vocabulary_new.Services
             }
         }
 
+        public async Task<int> SaveManyCategoryAsync(List<Category> category)
+        {
+            await WaitForDatabase();
+
+            var dataNow = DateTime.Now;
+            // Set DisplayOrder to max + 1 for new categories
+            var maxOrder = await _database!.Table<Category>().OrderByDescending(c => c.DisplayOrder).FirstOrDefaultAsync();
+            var displayOrder = maxOrder != null ? maxOrder.DisplayOrder + 1 : 0;
+            foreach (var item in category)
+            {
+                item.DisplayOrder = displayOrder;
+                item.CreatedDate = dataNow;
+                displayOrder++;
+            }
+            return await _database!.InsertAllAsync(category);
+
+        }
+
         public async Task<int> DeleteCategoryAsync(Category category)
         {
             await WaitForDatabase();
@@ -318,7 +336,7 @@ namespace Korean_Vocabulary_new.Services
                 {
                     if (categorys.Any(x => x.Category.Name != "Yêu thích" && x.IsSelected))
                     {
-                        allWords = databaseWords .Where(w => w.IsFavorite || CheckCategoryMatch(w.Category, categorys)).ToList();
+                        allWords = databaseWords.Where(w => w.IsFavorite || CheckCategoryMatch(w.Category, categorys)).ToList();
                     }
                     else
                     {
@@ -327,7 +345,7 @@ namespace Korean_Vocabulary_new.Services
                 }
                 else
                 {
-                    allWords = databaseWords .Where(w => CheckCategoryMatch(w.Category, categorys)).ToList();
+                    allWords = databaseWords.Where(w => CheckCategoryMatch(w.Category, categorys)).ToList();
                 }
             }
             else
@@ -353,7 +371,7 @@ namespace Korean_Vocabulary_new.Services
 
         private bool CheckCategoryMatch(string? categoryName, List<CategorySelectionItem> categorysCheck)
         {
-            if(categoryName == null)
+            if (categoryName == null)
             {
                 return false;
             }
@@ -362,7 +380,7 @@ namespace Korean_Vocabulary_new.Services
             {
                 if (categoryItem.IsSelected)
                 {
-                    if(categoryName.Contains(categoryItem.Category.Name))
+                    if (categoryName.Contains(categoryItem.Category.Name))
                     {
                         return true;
                     }

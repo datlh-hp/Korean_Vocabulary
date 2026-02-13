@@ -20,6 +20,7 @@ namespace Korean_Vocabulary_new.ViewModels
             DeleteCategoryCommand = new Command<Category>(async (category) => await DeleteCategoryAsync(category));
             MoveUpCommand = new Command<Category>(async (category) => await MoveCategoryUpAsync(category));
             MoveDownCommand = new Command<Category>(async (category) => await MoveCategoryDownAsync(category));
+            ChangeOrderCommand = new Command<(int, int)>(async (displayOrder) => await ChangeOrderAsync(displayOrder));
 
             Task.Run(LoadCategoriesAsync);
         }
@@ -42,6 +43,7 @@ namespace Korean_Vocabulary_new.ViewModels
         public ICommand DeleteCategoryCommand { get; }
         public ICommand MoveUpCommand { get; }
         public ICommand MoveDownCommand { get; }
+        public ICommand ChangeOrderCommand { get; }
 
         private async Task LoadCategoriesAsync()
         {
@@ -180,6 +182,38 @@ namespace Korean_Vocabulary_new.ViewModels
 
                 // Update in database
                 await _databaseService.UpdateCategoryOrderAsync(new List<Category> { category, nextCategory });
+
+                // Reload to reflect changes
+                await LoadCategoriesAsync();
+
+            }
+            catch
+            {
+                var tempList = Categories.OrderBy(c => c.DisplayOrder).ToList();
+                for (int i = 0; i < Categories.Count; i++)
+                {
+                    tempList[i].DisplayOrder = i;
+                }
+                // Update in database
+                await _databaseService.UpdateCategoryOrderAsync(tempList);
+                // Reload to reflect changes
+                await LoadCategoriesAsync();
+            }
+        }
+    
+        private async Task ChangeOrderAsync((int,int) displayOrder)
+        {
+            try
+            {
+                var id = displayOrder.Item1;
+                var oldOrder = Categories.FirstOrDefault(x => x.Id == id)!.DisplayOrder;
+                var newOrder = displayOrder.Item2;
+                Categories.FirstOrDefault(x => x.DisplayOrder == newOrder)!.DisplayOrder = oldOrder;
+                Categories.FirstOrDefault(x => x.Id == id)!.DisplayOrder = newOrder;
+                
+
+                // Update in database
+                await _databaseService.UpdateCategoryOrderAsync(Categories.ToList());
 
                 // Reload to reflect changes
                 await LoadCategoriesAsync();
