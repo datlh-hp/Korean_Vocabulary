@@ -171,6 +171,10 @@ namespace Korean_Vocabulary_new.ViewModels
                 {
                     words = await _databaseService.GetWordsByCategoryAsync(SelectedCategory);
                 }
+                if (words != null && words.Count > 4) {
+
+                   words.Add(words[0]);
+                }
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -259,6 +263,7 @@ namespace Korean_Vocabulary_new.ViewModels
             if (confirm)
             {
                 await _databaseService.DeleteWordAsync(word);
+                await LoadCategoriesAsync();
                 await LoadWordsAsync();
             }
         }

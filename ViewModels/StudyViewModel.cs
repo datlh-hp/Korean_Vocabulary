@@ -117,7 +117,17 @@ namespace Korean_Vocabulary_new.ViewModels
         public bool ShowAnswer
         {
             get => _showAnswer;
-            set => SetProperty(ref _showAnswer, value);
+            set {
+                if(SetProperty(ref _showAnswer, value))
+                {
+                    if (value == true && CurrentWord != null && !string.IsNullOrWhiteSpace(CurrentWord.KoreanWord))
+                    {
+                        _audioService.SpeakKoreanAsync(CurrentWord.KoreanWord) ;
+                    }
+                }
+               
+            } 
+                
         }
 
         public string UserAnswer

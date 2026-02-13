@@ -91,38 +91,48 @@ namespace Korean_Vocabulary_new.Services
         {
             try
             {
-                var result = await FilePicker.Default.PickAsync(new PickOptions
+                var results = await FilePicker.Default.PickMultipleAsync(new PickOptions
                 {
-                    PickerTitle = "Chọn file JSON để import",
+                    PickerTitle = "Chọn nhiều file JSON để import",
                     FileTypes = new FilePickerFileType(
                         new Dictionary<DevicePlatform, IEnumerable<string>>
                         {
-                            { DevicePlatform.Android, new[] { "application/json", "json" } },
-                            { DevicePlatform.iOS, new[] { "public.json" } },
-                            { DevicePlatform.WinUI, new[] { ".json" } },
-                            { DevicePlatform.macOS, new[] { "json" } }
+                        { DevicePlatform.Android, new[] { "application/json", "json" } },
+                        { DevicePlatform.iOS, new[] { "public.json" } },
+                        { DevicePlatform.WinUI, new[] { ".json" } },
+                        { DevicePlatform.macOS, new[] { "json" } }
                         })
                 });
 
-                if (result == null)
+                if (results == null || !results.Any())
                     return false;
 
-                using var stream = await result.OpenReadAsync();
-                using var reader = new StreamReader(stream);
-                var jsonContent = await reader.ReadToEndAsync();
+                var allImportData = new List<ImportWordData>();
 
-                var importData = JsonSerializer.Deserialize<List<ImportWordData>>(jsonContent);
-
-                if (importData == null || importData.Count == 0)
+                foreach (var file in results)
                 {
-                    await Application.Current!.MainPage!.DisplayAlert(
-                        "Lỗi",
-                        "File JSON không hợp lệ hoặc trống",
-                        "OK");
-                    return false;
+                    using var stream = await file.OpenReadAsync();
+                    using var reader = new StreamReader(stream);
+                    var jsonContent = await reader.ReadToEndAsync();
+
+                    var importData = JsonSerializer.Deserialize<List<ImportWordData>>(jsonContent);
+
+                    if (importData == null || importData.Count == 0)
+                    {
+                        await Application.Current!.MainPage!.DisplayAlert(
+                            "Lỗi",
+                            $"File {file.FileName} không hợp lệ hoặc trống",
+                            "OK");
+                        continue; // bỏ qua file lỗi, vẫn xử lý các file khác
+                    }
+
+                    allImportData.AddRange(importData);
                 }
 
-                return await ProcessImportAsync(importData);
+                if (allImportData.Count == 0)
+                    return false;
+
+                return await ProcessImportAsync(allImportData);
             }
             catch (Exception ex)
             {
@@ -133,6 +143,7 @@ namespace Korean_Vocabulary_new.Services
                 return false;
             }
         }
+
 
         private async Task<bool> ProcessImportAsync(List<ImportWordData> importData)
         {
@@ -193,11 +204,11 @@ namespace Korean_Vocabulary_new.Services
                                 continue;
                             }
 
-                            if (CheckCategoryMatch(existingWord.Category, importWord.Category))
+                            if (CheckCategoryMatch(ref existingWord, importWord.Category))
                             {
                                 continue;
                             }
-                            existingWord.Category += ", " + importWord.Category;
+
                             await _databaseService.SaveWordAsync(existingWord);
                             continue;
                         }
@@ -237,20 +248,25 @@ namespace Korean_Vocabulary_new.Services
                 return false;
             }
         }
-        private bool CheckCategoryMatch(string? cateExisting, string? cateImport)
+        private bool CheckCategoryMatch(ref VocabularyWord? cateExisting, string? cateImport)
         {
             if (cateExisting == null || cateImport == null)
             {
-                return false;
+                return true;
             }
-
+            int countCheck = 0;
             foreach (var item in cateImport.Split(','))
             {
                 var itemTrimmed = item.TrimStart().TrimEnd();
-                if (cateExisting.Contains(itemTrimmed))
+                if (!cateExisting.Category!.Contains(itemTrimmed))
                 {
-                    return true;
+                    countCheck++;
+                    cateExisting.Category += ", " + itemTrimmed;
                 }
+            }
+            if (countCheck == 0)
+            {
+                return true;
             }
             return false;
         }
@@ -284,7 +300,7 @@ namespace Korean_Vocabulary_new.Services
                 {
                     try
                     {
-                        var context = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity?.ApplicationContext ?? 
+                        var context = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity?.ApplicationContext ??
                                      Android.App.Application.Context;
 
                         if (context == null)

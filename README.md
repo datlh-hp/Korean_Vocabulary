@@ -1,3 +1,5 @@
+dotnet publish -f net8.0-android -c Release
+
 # Ứng dụng Học Từ vựng Tiếng Hàn
 
 Ứng dụng Android được xây dựng bằng C# MAUI để ghi chú và học từ vựng tiếng Hàn. Dữ liệu được lưu trữ cục bộ trên thiết bị.
