@@ -165,11 +165,11 @@ namespace Korean_Vocabulary_new.Services
                 if (action == "Replace (Xóa tất cả, import mới)")
                 {
                     // Delete all existing words
-                    var allWords = await _databaseService.GetAllWordsAsync();
-                    foreach (var word in allWords)
-                    {
-                        await _databaseService.DeleteWordAsync(word);
-                    }
+                    //var allWords = await _databaseService.GetAllWordsAsync();
+                    //foreach (var word in allWords)
+                    //{
+                    //    await _databaseService.DeleteWordAsync(word);
+                    //}
                 }
 
                 // Import words

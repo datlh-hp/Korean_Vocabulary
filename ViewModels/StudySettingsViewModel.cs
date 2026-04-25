@@ -2,6 +2,7 @@ using Korean_Vocabulary_new.Models;
 using Korean_Vocabulary_new.Services;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Korean_Vocabulary_new.ViewModels
@@ -15,6 +16,7 @@ namespace Korean_Vocabulary_new.ViewModels
         private string _selectedCategory = "Tất cả";
         private string _selectedWordType = string.Empty;
         private string _wordCountText = "10";
+        private string _categoryText = "";
         private int _wordCount = 10;
         private bool _isAutoMode = true;
         private bool _isRandomMode = false;
@@ -80,6 +82,12 @@ namespace Korean_Vocabulary_new.ViewModels
             set => SetProperty(ref _wordCountText, value);
         }
 
+        public string CategoryText
+        {
+            get => _categoryText;
+            set => SetProperty(ref _categoryText, value);
+        }
+
         public int WordCount
         {
             get => _wordCount;
@@ -141,10 +149,47 @@ namespace Korean_Vocabulary_new.ViewModels
 
         public bool CanStartStudy => WordCount > 0;
 
+        public void ApplyCategoty()
+        {
+            foreach (var item in Categories)
+            {
+                item.IsSelected = false;
+                if (!item.Category.Name.Equals("Tất cả") && item.Category.Name.Contains(_categoryText))
+                {
+                    item.IsSelected = true;
+                }
+            }
+
+        }
+
         public void ApplyWordCount()
         {
             if (int.TryParse(WordCountText, out int count) && count > 0)
             {
+                var value = count * 10;
+                WordCount = value;
+                _wordCount = value;
+                OnPropertyChanged(nameof(WordCount));
+                OnPropertyChanged(nameof(CanStartStudy));
+                ((Command)StartStudyCommand).ChangeCanExecute();
+            }
+            else
+            {
+                _wordCount = 10; // Default
+                _wordCountText = "10";
+                OnPropertyChanged(nameof(WordCount));
+                OnPropertyChanged(nameof(WordCountText));
+                OnPropertyChanged(nameof(CanStartStudy));
+                ((Command)StartStudyCommand).ChangeCanExecute();
+            }
+        }
+
+        public void CheckWordCount()
+        {
+            if (int.TryParse(WordCountText, out int count) && count > 0)
+            {
+                
+                WordCount = count;
                 _wordCount = count;
                 OnPropertyChanged(nameof(WordCount));
                 OnPropertyChanged(nameof(CanStartStudy));
@@ -193,8 +238,8 @@ namespace Korean_Vocabulary_new.ViewModels
 
         private async Task StartStudyAsync()
         {
-            // Apply word count first
-            ApplyWordCount();
+
+            CheckWordCount();
 
             List<VocabularyWord> wordsToStudy;
 

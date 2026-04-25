@@ -177,7 +177,6 @@
                                             VerticalOptions="Center" />
                                     </Grid>
 
-
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>

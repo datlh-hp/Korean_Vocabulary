@@ -349,11 +349,11 @@ namespace Korean_Vocabulary_new.ViewModels
             if (isCorrect)
             {
                 CorrectCount++;
-                await Application.Current!.MainPage!.DisplayAlert("Đúng rồi! 👍", "Bạn trả lời đúng!", "OK");
+                await Application.Current!.MainPage!.DisplayAlert("✔️✔️✔️ Đúng rồi!👍 ✔️✔️✔️", "Bạn trả lời đúng!", "OK");
             }
             else
             {
-                await Application.Current!.MainPage!.DisplayAlert("Sai rồi 😔", $"Đáp án đúng: {correctAnswer}", "OK");
+                await Application.Current!.MainPage!.DisplayAlert("❌❌❌ Sai rồi😔 ❌❌❌", $"Đáp án đúng: {correctAnswer}", "OK");
             }
 
             ShowAnswer = true;
@@ -423,11 +423,11 @@ namespace Korean_Vocabulary_new.ViewModels
             if (isCorrect)
             {
                 CorrectCount++;
-                await Application.Current!.MainPage!.DisplayAlert("Đúng rồi! 👍", "Bạn trả lời đúng!", "OK");
+                await Application.Current!.MainPage!.DisplayAlert("✔️✔️✔️ Đúng rồi!👍 ✔️✔️✔️", "Bạn trả lời đúng!", "OK");
             }
             else
             {
-                await Application.Current!.MainPage!.DisplayAlert("Sai rồi 😔", $"Đáp án đúng: {correctAnswer}", "OK");
+                await Application.Current!.MainPage!.DisplayAlert("❌❌❌ Sai rồi😔 ❌❌❌", $"Đáp án đúng: {correctAnswer}", "OK");
             }
 
             ShowAnswer = true;

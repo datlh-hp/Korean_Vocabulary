@@ -20,6 +20,14 @@ namespace Korean_Vocabulary_new.Pages
                 _viewModel.ApplyWordCount();
             }
         }
+
+        private void OnApplyCategory(object? sender, EventArgs e)
+        {
+            if (_viewModel != null)
+            {
+                _viewModel.ApplyCategoty();
+            }
+        }
     }
 }
 

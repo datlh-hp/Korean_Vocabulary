@@ -91,6 +91,12 @@ namespace Korean_Vocabulary_new.Services
             }
         }
 
+        public async Task<List<Category>> SelectCategorysAsync(string query)
+        {
+            await WaitForDatabase();
+            return await _database!.QueryAsync<Category>(query);
+        }
+
         // Vocabulary Word operations
         public async Task<List<VocabularyWord>> GetAllWordsAsync()
         {
