@@ -68,7 +68,7 @@
                            HorizontalOptions="Center"
                            TextColor="{StaticResource Primary}"
                            Margin="0,0,0,5"
-                           IsVisible="{Binding CurrentWord, Converter={StaticResource IsNotNullConverter}}" />
+                           IsVisible="{Binding IsVoiceMode}" />
                     <Border Grid.Column="1"
                             BackgroundColor="{StaticResource SecondaryLight}"
                             StrokeThickness="0"
@@ -103,19 +103,11 @@
                     </Border>
                 </Grid>
 
-                <Label Text="{Binding CurrentWord.Pronunciation}"
-                       FontSize="22"
-                       HorizontalOptions="Center"
-                       TextColor="{StaticResource Gray600}"
-                       FontAttributes="Italic"
-                       Margin="0,0,0,10"
-                       IsVisible="{Binding ShowPronunciation}" />
-
                 <Border BackgroundColor="{StaticResource SecondaryLight}"
                         StrokeThickness="0"
                         Padding="0"
                         HorizontalOptions="Center"
-                        IsVisible="{Binding CurrentWord.WordType, Converter={StaticResource IsNotNullConverter}}">
+                        IsVisible="{Binding IsVoiceMode}">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="10" />
                     </Border.StrokeShape>
@@ -125,7 +117,8 @@
                            HorizontalOptions="Center"
                            TextColor="{StaticResource Primary}"
                            BackgroundColor="Transparent"
-                           Padding="12,6" />
+                           Padding="12,6" 
+                           />
                 </Border>
 
                 <Border BackgroundColor="{StaticResource SecondaryLight}"

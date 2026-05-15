@@ -22,6 +22,7 @@ namespace Korean_Vocabulary_new.ViewModels
         private bool _isRandomMode = false;
         private bool _isReverseMode = false;
         private bool _isMultipleChoiceMode = false;
+        private bool _isVoiceMode = false;
 
         public StudySettingsViewModel(DatabaseService databaseService)
         {
@@ -147,6 +148,12 @@ namespace Korean_Vocabulary_new.ViewModels
             set => SetProperty(ref _isMultipleChoiceMode, value);
         }
 
+        public bool IsVoiceMode
+        {
+            get => _isVoiceMode;
+            set => SetProperty(ref _isVoiceMode, value);
+        }
+
         public bool CanStartStudy => WordCount > 0;
 
         public void ApplyCategoty()
@@ -245,7 +252,7 @@ namespace Korean_Vocabulary_new.ViewModels
 
             if (IsAutoMode)
             {
-                wordsToStudy = await _databaseService.GetWordsForStudyAsync(WordCount);
+                wordsToStudy = await _databaseService.GetWordsAsync(WordCount, Categories.ToList(), SelectedWordType);
             }
             else // IsRandomMode
             {
@@ -262,7 +269,8 @@ namespace Korean_Vocabulary_new.ViewModels
             var wordIds = string.Join(",", wordsToStudy.Select(w => w.Id));
             var reverseModeParam = IsReverseMode ? "true" : "false";
             var multipleChoiceParam = IsMultipleChoiceMode ? "true" : "false";
-            await Shell.Current.GoToAsync($"StudyPage?Words={wordIds}&ReverseMode={reverseModeParam}&MultipleChoice={multipleChoiceParam}");
+            var voiceParam = IsVoiceMode ? "true" : "false";
+            await Shell.Current.GoToAsync($"StudyPage?Words={wordIds}&ReverseMode={reverseModeParam}&MultipleChoice={multipleChoiceParam}&Voice={voiceParam}");
         }
     }
 }

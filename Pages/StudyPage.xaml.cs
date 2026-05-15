@@ -5,12 +5,14 @@ namespace Korean_Vocabulary_new.Pages
     [QueryProperty(nameof(WordIds), "Words")]
     [QueryProperty(nameof(ReverseMode), "ReverseMode")]
     [QueryProperty(nameof(MultipleChoice), "MultipleChoice")]
+    [QueryProperty(nameof(Voice), "Voice")]
     public partial class StudyPage : ContentPage
     {
         private StudyViewModel? _viewModel;
         private string? _wordIdsString;
         private string? _reverseModeString;
         private string? _multipleChoiceString;
+        private string? _voiceString;
 
         public string? WordIds
         {
@@ -47,6 +49,18 @@ namespace Korean_Vocabulary_new.Pages
                 {
                     bool isMultipleChoice = value.Equals("true", StringComparison.OrdinalIgnoreCase);
                     _viewModel.SetMultipleChoiceMode(isMultipleChoice);
+                }
+            }
+        }
+        public string? Voice
+        {
+            set
+            {
+                _voiceString = value;
+                if (_viewModel != null && !string.IsNullOrEmpty(value))
+                {
+                    bool isVoice = value.Equals("true", StringComparison.OrdinalIgnoreCase);
+                    _viewModel.SetVoiceMode(isVoice);
                 }
             }
         }

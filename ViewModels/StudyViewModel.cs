@@ -20,6 +20,7 @@ namespace Korean_Vocabulary_new.ViewModels
         private bool _isFinished = false;
         private bool _isReverseMode = false;
         private bool _isMultipleChoiceMode = false;
+        private bool _isVoiceMode = false;
         private string _choice1 = string.Empty;
         private string _choice2 = string.Empty;
         private string _choice3 = string.Empty;
@@ -80,6 +81,21 @@ namespace Korean_Vocabulary_new.ViewModels
             }
         }
 
+        public void SetVoiceMode(bool isVoiceMode)
+        {
+            isVoiceMode = !isVoiceMode;
+            if (SetProperty(ref _isVoiceMode, isVoiceMode))
+            {
+                OnPropertyChanged(nameof(IsVoiceMode));
+                // Update choices if we have a current word
+                // If CurrentWord is null, UpdateChoices will be called when CurrentWord is set
+                //if (CurrentWord != null)
+                //{
+                //    UpdateChoices();
+                //}
+            }
+        }
+
         public VocabularyWord? CurrentWord
         {
             get => _currentWord;
@@ -90,7 +106,6 @@ namespace Korean_Vocabulary_new.ViewModels
                     OnPropertyChanged(nameof(QuestionText));
                     OnPropertyChanged(nameof(AnswerPlaceholder));
                     OnPropertyChanged(nameof(CorrectAnswerText));
-                    OnPropertyChanged(nameof(ShowPronunciation));
                     UpdateChoices();
                 }
             }
@@ -198,6 +213,11 @@ namespace Korean_Vocabulary_new.ViewModels
             get => _isMultipleChoiceMode;
             set => SetMultipleChoiceMode(value);
         }
+        public bool IsVoiceMode
+        {
+            get => _isVoiceMode;
+            set => SetVoiceMode(value);
+        }
 
         public string QuestionText
         {
@@ -214,11 +234,6 @@ namespace Korean_Vocabulary_new.ViewModels
             {
                 return IsReverseMode ? "Nhập từ tiếng Hàn..." : "Nhập nghĩa tiếng Việt...";
             }
-        }
-
-        public bool ShowPronunciation
-        {
-            get => !IsReverseMode && CurrentWord != null && !string.IsNullOrWhiteSpace(CurrentWord.Pronunciation);
         }
 
         public string CorrectAnswerText
@@ -366,6 +381,7 @@ namespace Korean_Vocabulary_new.ViewModels
                 CurrentIndex++;
                 CurrentWord = StudyWords[CurrentIndex];
                 ShowAnswer = false;
+                IsVoiceMode = true;
                 UserAnswer = string.Empty;
                 UpdateChoices();
             }
@@ -429,7 +445,7 @@ namespace Korean_Vocabulary_new.ViewModels
             {
                 await Application.Current!.MainPage!.DisplayAlert("❌❌❌ Sai rồi😔 ❌❌❌", $"Đáp án đúng: {correctAnswer}", "OK");
             }
-
+            IsVoiceMode = false;
             ShowAnswer = true;
         }
 

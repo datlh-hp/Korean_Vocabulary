@@ -125,6 +125,22 @@
                         VerticalOptions="Center" />
             </Grid>
 
+            <!-- Voice Choice mode -->
+            <Label Text="Chế độ nghe đoán" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <VerticalStackLayout Grid.Column="0" Spacing="5">
+                    <Label Text="Nghe để đoán từ"
+               FontSize="14"
+               TextColor="{StaticResource Gray700}" />
+                    <Label Text="(Mặc định: Chế độ bình thường)"
+               FontSize="12"
+               TextColor="{StaticResource Gray500}" />
+                </VerticalStackLayout>
+                <Switch Grid.Column="1"
+            IsToggled="{Binding IsVoiceMode}"
+            VerticalOptions="Center" />
+            </Grid>
+            
             <!-- Buttons -->
             <Grid ColumnDefinitions="*,*" Margin="0,20,0,0" ColumnSpacing="10">
                 <Button Grid.Column="0"

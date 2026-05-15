@@ -328,6 +328,53 @@ namespace Korean_Vocabulary_new.Services
             return wordsToReview.OrderBy(x => random.Next()).ToList();
         }
 
+        public async Task<List<VocabularyWord>> GetWordsAsync(int count, List<CategorySelectionItem>? categorys = null, string? wordType = null)
+        {
+            await WaitForDatabase();
+
+            List<VocabularyWord> allWords;
+
+            var databaseWords = await _database!.Table<VocabularyWord>().ToListAsync();
+            // Filter by category if specified
+            if (categorys != null && categorys.Any(x => x.IsSelected) && categorys.Any(x => x.Category.Name == "Tất cả" && !x.IsSelected))
+            {
+                if (categorys.Any(x => x.Category.Name == "Yêu thích" && x.IsSelected))
+                {
+                    if (categorys.Any(x => x.Category.Name != "Yêu thích" && x.IsSelected))
+                    {
+                        allWords = databaseWords.Where(w => w.IsFavorite || CheckCategoryMatch(w.Category, categorys)).ToList();
+                    }
+                    else
+                    {
+                        allWords = databaseWords.Where(w => w.IsFavorite).ToList();
+                    }
+                }
+                else
+                {
+                    allWords = databaseWords.Where(w => CheckCategoryMatch(w.Category, categorys)).ToList();
+                }
+            }
+            else
+            {
+                allWords = await _database!.Table<VocabularyWord>().ToListAsync();
+            }
+
+            // Filter by word type if specified
+            if (!string.IsNullOrEmpty(wordType) && wordType != "Tất cả")
+            {
+                allWords = allWords.Where(w => w.WordType == wordType).ToList();
+            }
+
+            if (allWords.Count == 0)
+            {
+                return new List<VocabularyWord>();
+            }
+
+            // Shuffle and take count
+            var random = new Random();
+            return allWords.Take(count).ToList();
+        }
+
         public async Task<List<VocabularyWord>> GetRandomWordsAsync(int count, List<CategorySelectionItem>? categorys = null, string? wordType = null)
         {
             await WaitForDatabase();
