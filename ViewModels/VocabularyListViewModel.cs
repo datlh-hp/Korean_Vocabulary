@@ -218,6 +218,10 @@ namespace Korean_Vocabulary_new.ViewModels
                     Categories.Clear();
                     foreach (var category in categories)
                     {
+                        if (category.Hide == true)
+                        {
+                            continue;
+                        }
                         var count = await _databaseService.CountWordsByCategoryAsync(category.Name);
                         Categories.Add(new CategoryCount(category, count));
                     }

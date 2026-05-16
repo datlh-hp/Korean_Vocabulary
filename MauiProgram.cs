@@ -33,6 +33,7 @@ namespace Korean_Vocabulary_new
             builder.Services.AddTransient<StudySettingsViewModel>();
             builder.Services.AddTransient<CategoryListViewModel>();
             builder.Services.AddTransient<AddEditCategoryViewModel>();
+            builder.Services.AddTransient<SettingCategoryViewModel>();
 
             // Register Pages
             builder.Services.AddTransient<VocabularyListPage>();
@@ -41,6 +42,7 @@ namespace Korean_Vocabulary_new
             builder.Services.AddTransient<StudySettingsPage>();
             builder.Services.AddTransient<CategoryListPage>();
             builder.Services.AddTransient<AddEditCategoryPage>();
+            builder.Services.AddTransient<SettingCategoryPage>();
 
 #if DEBUG
     		builder.Logging.AddDebug();

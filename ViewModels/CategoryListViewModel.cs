@@ -16,11 +16,13 @@ namespace Korean_Vocabulary_new.ViewModels
             _databaseService = databaseService;
             LoadCategoriesCommand = new Command(async () => await LoadCategoriesAsync());
             AddCategoryCommand = new Command(async () => await AddCategoryAsync());
+            SettingCategoryCommand = new Command(async () => await SettingCategoryAsync());
             EditCategoryCommand = new Command<Category>(async (category) => await EditCategoryAsync(category));
             DeleteCategoryCommand = new Command<Category>(async (category) => await DeleteCategoryAsync(category));
             MoveUpCommand = new Command<Category>(async (category) => await MoveCategoryUpAsync(category));
             MoveDownCommand = new Command<Category>(async (category) => await MoveCategoryDownAsync(category));
             ChangeOrderCommand = new Command<(int, int)>(async (displayOrder) => await ChangeOrderAsync(displayOrder));
+            ChangeHideCommand = new Command<(int, bool)>(async (input) => await ChangeHideAsync(input));
 
             Task.Run(LoadCategoriesAsync);
         }
@@ -39,11 +41,13 @@ namespace Korean_Vocabulary_new.ViewModels
 
         public ICommand LoadCategoriesCommand { get; }
         public ICommand AddCategoryCommand { get; }
+        public ICommand SettingCategoryCommand { get; }
         public ICommand EditCategoryCommand { get; }
         public ICommand DeleteCategoryCommand { get; }
         public ICommand MoveUpCommand { get; }
         public ICommand MoveDownCommand { get; }
         public ICommand ChangeOrderCommand { get; }
+        public ICommand ChangeHideCommand { get; }
 
         private async Task LoadCategoriesAsync()
         {
@@ -74,7 +78,10 @@ namespace Korean_Vocabulary_new.ViewModels
         {
             await Shell.Current.GoToAsync("AddEditCategoryPage");
         }
-
+        private async Task SettingCategoryAsync()
+        {
+            await Shell.Current.GoToAsync("SettingCategoryPage");
+        }
         private async Task EditCategoryAsync(Category category)
         {
             if (category == null) return;
@@ -143,7 +150,7 @@ namespace Korean_Vocabulary_new.ViewModels
                 previousCategory.DisplayOrder = tempOrder;
 
                 // Update in database
-                await _databaseService.UpdateCategoryOrderAsync(new List<Category> { category, previousCategory });
+                await _databaseService.UpdateManyCategoryAsync(new List<Category> { category, previousCategory });
 
                 // Reload to reflect changes
                 await LoadCategoriesAsync();
@@ -156,7 +163,7 @@ namespace Korean_Vocabulary_new.ViewModels
                     tempList[i].DisplayOrder = i;
                 }
                 // Update in database
-                await _databaseService.UpdateCategoryOrderAsync(tempList);
+                await _databaseService.UpdateManyCategoryAsync(tempList);
                 // Reload to reflect changes
                 await LoadCategoriesAsync();
             }
@@ -181,7 +188,7 @@ namespace Korean_Vocabulary_new.ViewModels
                 nextCategory.DisplayOrder = tempOrder;
 
                 // Update in database
-                await _databaseService.UpdateCategoryOrderAsync(new List<Category> { category, nextCategory });
+                await _databaseService.UpdateManyCategoryAsync(new List<Category> { category, nextCategory });
 
                 // Reload to reflect changes
                 await LoadCategoriesAsync();
@@ -195,7 +202,7 @@ namespace Korean_Vocabulary_new.ViewModels
                     tempList[i].DisplayOrder = i;
                 }
                 // Update in database
-                await _databaseService.UpdateCategoryOrderAsync(tempList);
+                await _databaseService.UpdateManyCategoryAsync(tempList);
                 // Reload to reflect changes
                 await LoadCategoriesAsync();
             }
@@ -213,7 +220,7 @@ namespace Korean_Vocabulary_new.ViewModels
                 
 
                 // Update in database
-                await _databaseService.UpdateCategoryOrderAsync(Categories.ToList());
+                await _databaseService.UpdateManyCategoryAsync(Categories.ToList());
 
                 // Reload to reflect changes
                 await LoadCategoriesAsync();
@@ -227,7 +234,26 @@ namespace Korean_Vocabulary_new.ViewModels
                     tempList[i].DisplayOrder = i;
                 }
                 // Update in database
-                await _databaseService.UpdateCategoryOrderAsync(tempList);
+                await _databaseService.UpdateManyCategoryAsync(tempList);
+                // Reload to reflect changes
+                await LoadCategoriesAsync();
+            }
+        }
+    
+        private async Task ChangeHideAsync((int,bool) input)
+        {
+            try
+            {
+                var id = input.Item1;
+                var isHide = input.Item2;
+                var data = Categories.FirstOrDefault(x => x.Id == id);
+                data.Hide = isHide;
+                // Update in database
+                await _databaseService.SaveCategoryAsync(data);
+
+            }
+            catch
+            {
                 // Reload to reflect changes
                 await LoadCategoriesAsync();
             }

@@ -7,10 +7,10 @@
              Title="Quản lý danh mục"
              x:DataType="viewmodels:CategoryListViewModel">
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,*" >
         <!-- Header -->
         <Grid Grid.Row="0" 
-              ColumnDefinitions="*,Auto"
+              ColumnDefinitions="*,Auto,Auto"
               Padding="15,10"
               BackgroundColor="{StaticResource Gray100}">
             <Label Grid.Column="0"
@@ -19,6 +19,18 @@
                    FontAttributes="Bold"
                    VerticalOptions="Center" />
             <Button Grid.Column="1"
+                    Text=""
+                    Command="{Binding SettingCategoryCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    Padding="12,6"
+                    Margin="0,0,5,0"
+                    FontSize="14">
+                <Button.ImageSource>
+                    <FileImageSource File="settings_gear_options_option_icon_icons_com_59985.png" />
+                </Button.ImageSource>
+            </Button>
+            
+            <Button Grid.Column="2"
                     Text="Thêm"
                     Command="{Binding AddCategoryCommand}"
                     BackgroundColor="{StaticResource Primary}"
@@ -38,13 +50,13 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Category">
                         <Grid Padding="15,12"
-                              ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
+                              ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto">
                             <!--<Grid.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="{Binding .}" />
                             </Grid.GestureRecognizers>-->
-                            
+                            <CheckBox Grid.Column="0" IsChecked="{Binding Hide}" CheckedChanged="OnChangedHide"></CheckBox>
                             <!-- Color indicator -->
-                            <BoxView Grid.Column="0"
+                            <BoxView Grid.Column="1"
                                      WidthRequest="40"
                                      HeightRequest="40"
                                      CornerRadius="20"
@@ -53,7 +65,7 @@
                                      VerticalOptions="Center" />
                             
                             <!-- Category name -->
-                            <VerticalStackLayout Grid.Column="1" 
+                            <VerticalStackLayout Grid.Column="2" 
                                                  VerticalOptions="Center">
                                 <Label Text="{Binding Name}"
                                        FontSize="18"
@@ -64,33 +76,13 @@
                                        TextColor="{StaticResource Gray500}"
                                        Margin="0,5,0,0" />
                             </VerticalStackLayout>
+                            
+                            <!-- Display Order -->
+                            <StackLayout Grid.Column="3">
 
-                            <!-- Move Up button -->
-                            <!--<Button Grid.Column="2"
-                                    ImageSource="arrow_up_icon_266660.png"
-                                    FontSize="20"
-                                    BackgroundColor="Transparent"
-                                    TextColor="{StaticResource Primary}"
-                                    Clicked="OnMoveUpClicked"
-                                    CommandParameter="{Binding .}"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    Padding="0" />-->
-                            <Label Text="{Binding DisplayOrder}" Grid.Column="2"></Label>
-                            <Entry Grid.Column="3"
-                                    Completed="OnOrderCompleted"/>
-
-                            <!-- Move Down button -->
-                            <!--<Button Grid.Column="3"
-                                    ImageSource="arrow_down_icon_266663.png"
-                                    FontSize="20"
-                                    BackgroundColor="Transparent"
-                                    TextColor="{StaticResource Primary}"
-                                    Clicked="OnMoveDownClicked"
-                                    CommandParameter="{Binding .}"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    Padding="0" />-->
+                                <Label Text="{Binding DisplayOrder}"></Label>
+                                <Entry Completed="OnOrderCompleted"/>
+                            </StackLayout>
 
                             <!-- Edit button -->
                             <ImageButton Grid.Column="4"

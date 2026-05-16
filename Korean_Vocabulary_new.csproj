@@ -100,5 +100,10 @@
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
 		<ProguardConfiguration Include="Platforms\Android\proguard-rules.pro" />
 	</ItemGroup>
+	<ItemGroup>
+	  <MauiXaml Update="Pages\SettingCategoryPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
 
 </Project>

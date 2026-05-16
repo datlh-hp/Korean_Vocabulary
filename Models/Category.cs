@@ -18,6 +18,7 @@ namespace Korean_Vocabulary_new.Models
         public int DisplayOrder { get; set; } = 0; // For sorting/reordering
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public bool Hide { get; set; } = false;
     }
 }
 

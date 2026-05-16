@@ -15,6 +15,7 @@ namespace Korean_Vocabulary_new
             Routing.RegisterRoute(nameof(StudySettingsPage), typeof(StudySettingsPage));
             Routing.RegisterRoute(nameof(CategoryListPage), typeof(CategoryListPage));
             Routing.RegisterRoute(nameof(AddEditCategoryPage), typeof(AddEditCategoryPage));
+            Routing.RegisterRoute(nameof(SettingCategoryPage), typeof(SettingCategoryPage));
         }
     }
 }

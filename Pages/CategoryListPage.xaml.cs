@@ -92,6 +92,16 @@ namespace Korean_Vocabulary_new.Pages
             }
         }
 
+        private void OnChangedHide(object sender, CheckedChangedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            var category = (Category)checkbox.BindingContext;
+            (int, bool) data = (category.Id, checkbox.IsChecked);
+            if (_viewModel.ChangeHideCommand.CanExecute(data))
+            {
+                _viewModel.ChangeHideCommand.Execute(data);
+            }
+        }
     }
 }
 
