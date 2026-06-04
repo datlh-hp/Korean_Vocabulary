@@ -212,16 +212,12 @@ namespace Korean_Vocabulary_new.ViewModels
                 // Ensure database is initialized
                 await Task.Delay(100); // Give database time to initialize
                 
-                var categories = await _databaseService.GetAllCategoriesAsync();
+                var categories = await _databaseService.GetAllCategoriesHideXAsync();
                 MainThread.BeginInvokeOnMainThread(async () =>
                 {
                     Categories.Clear();
                     foreach (var category in categories)
                     {
-                        if (category.Hide == true)
-                        {
-                            continue;
-                        }
                         var count = await _databaseService.CountWordsByCategoryAsync(category.Name);
                         Categories.Add(new CategoryCount(category, count));
                     }
@@ -245,7 +241,7 @@ namespace Korean_Vocabulary_new.ViewModels
 
         private async Task AddWordAsync()
         {
-            await Shell.Current.GoToAsync("AddEditPage");
+            await Shell.Current.GoToAsync($"AddEditPage?Text={SearchText}");
         }
 
         private async Task EditWordAsync(VocabularyWord word)

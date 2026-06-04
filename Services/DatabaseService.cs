@@ -213,6 +213,11 @@ namespace Korean_Vocabulary_new.Services
             await WaitForDatabase();
             return await _database!.Table<Category>().OrderBy(c => c.DisplayOrder).ThenBy(c => c.Name).ToListAsync();
         }
+        public async Task<List<Category>> GetAllCategoriesHideXAsync()
+        {
+            await WaitForDatabase();
+            return await _database!.Table<Category>().Where(x=> !x.Hide) .OrderBy(c => c.DisplayOrder).ThenBy(c => c.Name).ToListAsync();
+        }
 
         public async Task UpdateManyCategoryAsync(List<Category> categories)
         {

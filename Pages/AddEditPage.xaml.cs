@@ -3,10 +3,12 @@ using Korean_Vocabulary_new.ViewModels;
 namespace Korean_Vocabulary_new.Pages
 {
     [QueryProperty(nameof(WordId), "Id")]
+    [QueryProperty(nameof(TextSearch), "Text")]
     public partial class AddEditPage : ContentPage
     {
         private AddEditViewModel? _viewModel;
         private string? _wordIdString;
+        private string? _textString;
 
         public string? WordId
         {
@@ -16,6 +18,17 @@ namespace Korean_Vocabulary_new.Pages
                 if (_viewModel != null && int.TryParse(value, out int id))
                 {
                     _viewModel.WordId = id;
+                }
+            }
+        }
+        public string? TextSearch
+        {
+            set
+            {
+                _textString = value;
+                if (_viewModel != null &&  !string.IsNullOrWhiteSpace(value))
+                {
+                    _viewModel.TextSearch = value;
                 }
             }
         }

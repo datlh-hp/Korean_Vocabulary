@@ -68,7 +68,7 @@
                            HorizontalOptions="Center"
                            TextColor="{StaticResource Primary}"
                            Margin="0,0,0,5"
-                           IsVisible="{Binding IsVoiceMode}" />
+                           IsVisible="{Binding IsWordCheck}" />
                     <Border Grid.Column="1"
                             BackgroundColor="{StaticResource SecondaryLight}"
                             StrokeThickness="0"
@@ -107,7 +107,7 @@
                         StrokeThickness="0"
                         Padding="0"
                         HorizontalOptions="Center"
-                        IsVisible="{Binding IsVoiceMode}">
+                        IsVisible="{Binding IsWordCheck}">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="10" />
                     </Border.StrokeShape>

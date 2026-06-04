@@ -119,6 +119,20 @@ namespace Korean_Vocabulary_new.ViewModels
             }
         }
 
+        public string _textSearch;
+        public string TextSearch
+        {
+            get => _textSearch;
+            set
+            {
+                if (SetProperty(ref _textSearch, value))
+                {
+                    TextSearch = value;
+                    Word.KoreanWord = value;
+                }
+            }
+        }
+
         public bool IsValid => !string.IsNullOrWhiteSpace(Word.KoreanWord) && 
                               !string.IsNullOrWhiteSpace(Word.VietnameseMeaning);
 
@@ -204,7 +218,7 @@ namespace Korean_Vocabulary_new.ViewModels
         {
             try
             {
-                var categories = await _databaseService.GetAllCategoriesAsync();
+                var categories = await _databaseService.GetAllCategoriesHideXAsync();
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     CategorySelections.Clear();

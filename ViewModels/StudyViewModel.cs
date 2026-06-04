@@ -21,6 +21,7 @@ namespace Korean_Vocabulary_new.ViewModels
         private bool _isReverseMode = false;
         private bool _isMultipleChoiceMode = false;
         private bool _isVoiceMode = false;
+        private bool _isWordCheck = true;
         private string _choice1 = string.Empty;
         private string _choice2 = string.Empty;
         private string _choice3 = string.Empty;
@@ -40,7 +41,10 @@ namespace Korean_Vocabulary_new.ViewModels
             SpeakKoreanCommand = new Command(async () => await SpeakKoreanAsync());
             SpeakVietnameseCommand = new Command(async () => await SpeakVietnameseAsync());
             SelectChoiceCommand = new Command<string>(async (param) => await SelectChoiceAsync(param));
-
+            if (IsVoiceMode)
+            {
+                _isWordCheck = false;
+            }
             // Don't auto-start here - wait for SetWordIds to be called from StudyPage
             // This ensures QueryProperties (MultipleChoice, ReverseMode) are set first
         }
@@ -81,18 +85,23 @@ namespace Korean_Vocabulary_new.ViewModels
             }
         }
 
+        public void SetWord(bool isOff = false)
+        {
+            if (IsVoiceMode)
+            {
+                IsWordCheck = isOff;
+            }
+        }
+
         public void SetVoiceMode(bool isVoiceMode)
         {
-            isVoiceMode = !isVoiceMode;
             if (SetProperty(ref _isVoiceMode, isVoiceMode))
             {
                 OnPropertyChanged(nameof(IsVoiceMode));
-                // Update choices if we have a current word
-                // If CurrentWord is null, UpdateChoices will be called when CurrentWord is set
-                //if (CurrentWord != null)
-                //{
-                //    UpdateChoices();
-                //}
+                if (IsVoiceMode)
+                {
+                    IsWordCheck = false;
+                }
             }
         }
 
@@ -132,17 +141,18 @@ namespace Korean_Vocabulary_new.ViewModels
         public bool ShowAnswer
         {
             get => _showAnswer;
-            set {
-                if(SetProperty(ref _showAnswer, value))
+            set
+            {
+                if (SetProperty(ref _showAnswer, value))
                 {
                     if (value == true && CurrentWord != null && !string.IsNullOrWhiteSpace(CurrentWord.KoreanWord))
                     {
-                        _audioService.SpeakKoreanAsync(CurrentWord.KoreanWord) ;
+                        _audioService.SpeakKoreanAsync(CurrentWord.KoreanWord);
                     }
                 }
-               
-            } 
-                
+
+            }
+
         }
 
         public string UserAnswer
@@ -191,7 +201,7 @@ namespace Korean_Vocabulary_new.ViewModels
                 return $"{CurrentIndex + 1} / {TotalCount}";
             }
         }
-        
+
         public string ScoreText
         {
             get
@@ -217,6 +227,17 @@ namespace Korean_Vocabulary_new.ViewModels
         {
             get => _isVoiceMode;
             set => SetVoiceMode(value);
+        }
+        public bool IsWordCheck
+        {
+            get => _isWordCheck;
+            set
+            {
+                if (SetProperty(ref _isWordCheck, value))
+                {
+                    OnPropertyChanged(nameof(IsWordCheck));
+                }
+            }
         }
 
         public string QuestionText
@@ -284,9 +305,9 @@ namespace Korean_Vocabulary_new.ViewModels
             {
                 // Wait a bit to ensure database is ready
                 await Task.Delay(100);
-                
+
                 List<VocabularyWord> words;
-                
+
                 // If word IDs are provided, use them
                 if (_wordIds != null && _wordIds.Count > 0)
                 {
@@ -304,7 +325,7 @@ namespace Korean_Vocabulary_new.ViewModels
                 {
                     words = await _databaseService.GetWordsForStudyAsync(10);
                 }
-                
+
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     StudyWords.Clear();
@@ -312,7 +333,7 @@ namespace Korean_Vocabulary_new.ViewModels
                     {
                         StudyWords.Add(word);
                     }
-                    
+
                     TotalCount = StudyWords.Count;
                     CurrentIndex = 0;
                     CorrectCount = 0;
@@ -336,7 +357,7 @@ namespace Korean_Vocabulary_new.ViewModels
             catch (Exception ex)
             {
                 await Application.Current!.MainPage!.DisplayAlert("Lỗi", $"Không thể tải từ vựng: {ex.Message}", "OK");
-                
+
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     IsFinished = true;
@@ -358,7 +379,7 @@ namespace Korean_Vocabulary_new.ViewModels
 
             string correctAnswer = IsReverseMode ? CurrentWord.KoreanWord : CurrentWord.VietnameseMeaning;
             bool isCorrect = UserAnswer.Trim().Equals(correctAnswer.Trim(), StringComparison.OrdinalIgnoreCase);
-            
+
             await _databaseService.UpdateStudyStatsAsync(CurrentWord.Id, isCorrect);
 
             if (isCorrect)
@@ -378,12 +399,17 @@ namespace Korean_Vocabulary_new.ViewModels
         {
             if (CurrentIndex < StudyWords.Count - 1)
             {
+
                 CurrentIndex++;
                 CurrentWord = StudyWords[CurrentIndex];
                 ShowAnswer = false;
-                IsVoiceMode = true;
+                SetWord(false);
                 UserAnswer = string.Empty;
                 UpdateChoices();
+                if (!IsReverseMode)
+                {
+                    await _audioService.SpeakKoreanAsync(CurrentWord.KoreanWord);
+                }
             }
             else
             {
@@ -445,7 +471,7 @@ namespace Korean_Vocabulary_new.ViewModels
             {
                 await Application.Current!.MainPage!.DisplayAlert("❌❌❌ Sai rồi😔 ❌❌❌", $"Đáp án đúng: {correctAnswer}", "OK");
             }
-            IsVoiceMode = false;
+            SetWord(true);
             ShowAnswer = true;
         }
 
@@ -463,7 +489,7 @@ namespace Korean_Vocabulary_new.ViewModels
             // Get random words for multiple choice options
             var allWords = await _databaseService.GetRandomWordsAsync(10);
             var correctAnswer = IsReverseMode ? CurrentWord.KoreanWord : CurrentWord.VietnameseMeaning;
-            
+
             // Filter out the correct answer and current word
             var wrongAnswers = allWords
                 .Where(w => w.Id != CurrentWord.Id)

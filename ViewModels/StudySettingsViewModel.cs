@@ -220,7 +220,7 @@ namespace Korean_Vocabulary_new.ViewModels
         {
             try
             {
-                var categories = await _databaseService.GetAllCategoriesAsync();
+                var categories = await _databaseService.GetAllCategoriesHideXAsync();
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     Categories.Clear();
