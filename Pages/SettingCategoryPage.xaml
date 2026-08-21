@@ -25,5 +25,13 @@
             Clicked="Button_Clicked_1"
             BackgroundColor="{StaticResource Primary}"
             Padding="12,0" />
+
+        <Label Text="Trùng" FontSize="16" FontAttributes="Bold" />
+        <Button Grid.Column="1"
+            Text="Click"
+            Clicked="Button_Clicked_2"
+            BackgroundColor="{StaticResource Primary}"
+            Padding="12,0" />
+       
     </VerticalStackLayout>
 </ContentPage>

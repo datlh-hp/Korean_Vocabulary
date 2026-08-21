@@ -32,4 +32,12 @@ public partial class SettingCategoryPage : ContentPage
             _viewModel.ResetHideCommand.Execute(null);
         }
     }
+
+    private void Button_Clicked_2(object sender, EventArgs e)
+    {
+        if (_viewModel.TrungCheckedCommand.CanExecute(null))
+        {
+            _viewModel.TrungCheckedCommand.Execute(null);
+        }
+    }
 }
